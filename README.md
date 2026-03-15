@@ -1,21 +1,21 @@
 # dream-tracker
-En enkel social plattform för att mäta och dokumentera sömnens längd och kvalitet samt de dynamiska scenerna som eventuellt uppstår under drömsömn.
+En enkel social plattform för att mäta och dokumentera sömnkvalitet samt de dynamiska scenerna som eventuellt uppstår under drömsömn.
 
 [Dokumentaatio on myös saatavilla suomeksi](README.fin.md).
 [Documentation also available in English](README.eng.md).
 
 ## Funktioner
 Användare kan
-- skapa ett konto och logga in,
-- skapa nya inlägg samt redigera och radera sina egna inlägg,
-- se sina egna likväl andra användares inlägg,
-- följa andra användare,
-- definiera synlighetsvillkor för sina inlägg (offentlig, enbart följare, privat...)
-- välja relevanta kategoriseringar för sina inlägg,
+- skapa ett konto och logga in
+- skapa nya inlägg samt redigera och radera sina egna inlägg
+- se sina egna likväl andra användares inlägg
+- följa andra användare och få deras inlägg i sitt flöde
+- ange synlighetsvillkor för sina inlägg (ex. offentlig, enbart följare, privat...)
+- välja kategorier till sina egna inlägg,
 - söka efter inlägg enligt sökord, filterkategorier eller statistik,
-- se andra användares profiler, samt aktuell statistik om dem och deras inlägg,
-- kommentera på sina egna och andra användares inlägg, samt tycka om dem,
-- lägga till sina egna eller andras inlägg till samlingslistor.
+- se användares profilsidor, som visar deras inlägg samt aktuell statistik om dem,
+- svara på, gilla och reagera på inlägg,
+- lägga till inlägg i samlingslistor
 
 # Installation
 Fortsättning följer...

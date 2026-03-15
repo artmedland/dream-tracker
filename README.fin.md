@@ -1,18 +1,18 @@
 # dream-tracker
-Yksinkertainen some unten pituuden ja laadun mittaukseen sekä unitarinoiden jakamiseen muiden käyttäjien kanssa.
+Yksinkertainen some unen laadun kirjaamiseen sekä unten tarinoiden jakamiseen muiden käyttäjien kanssa.
 
 ## Toiminnot
 Käyttäjät voivat
-- luoda tunnuksen ja kirjautua sisään,
-- julkaista omia päivityksiä sekä muokkaamaan ja poistamaan omia päivityksiään,
-- seurata toisia käyttäjiä,
-- nähdä omat sekä muiden käyttäjien päivitykset,
-- määritellä omien päivityksien näkyvyyttä (esim. julkinen, yksityinen, vain seuraajat...)
-- valita sopivat luokittelut omille päivityksilleen,
-- hakea päivityksiä sekä hakusanalla että luokitteluilla tai tilastollisilla määreillä,
-- nähdä oman tai toisen käyttäjän profiilisivun, jossa on kerättynä ko. käyttäjän päivitykset sekä tilastot,
-- tykätä omien tai muiden käyttäjien päivityksistä sekä kommentoida niitä,
-- sekä lisätä omia tai muiden käyttäjien päivityksiä omiin keräyslistoihin.
+- luoda tunnuksen ja kirjautua sisään
+- julkaista omia päivityksiä sekä muokata ja poistaa omia päivityksiään
+- katsella sekä omia että muiden käyttäjien päivityksiä
+- seurata toisia käyttäjiä ja nähdä näiden päivityksiä ohjelman etusivulla
+- määritellä omille päivityksilleen yksilöllisen näkyvyysmääreen (esim. julkinen, yksityinen, vain seuraajille...)
+- valita sopivia luokitteluja omille päivityksilleen
+- hakea päivityksiä hakusanojen, luokittelujen ja/tai tilastojen perusteella
+- tarkastella käyttäjien profiilisivuja, jotka sisältävät kyseenomaisen käyttäjän päivitykset sekä tilastot
+- vastata päivityksiin sekä tykätä ja reagoida niihin
+- lisätä päivityksiä omiin keräyslistoihin
 
 # Asennus
 Tulossa
