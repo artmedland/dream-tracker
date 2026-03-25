@@ -8,3 +8,4 @@ temp/
 
 database.db
 config/.secret_key
+/.vscode
