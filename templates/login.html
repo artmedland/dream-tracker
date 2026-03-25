@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Logga in</title>
+</head>
+
+<body>
+  {% if session.username %}
+  <p>
+    Du är redan inloggad!
+  </p>
+  <p>
+    <a href="/">Tillbaka till framsidan</a>
+    <a href="/logout">Logga ut</a>
+  </p>
+  {% else %}
+  <form action="/login" method="post">
+    <p>
+      Användarnamn: <br />
+      <input type="text" name="username" />
+    </p>
+    <p>
+      Lösenord <br />
+      <input type="password" name="password" />
+    </p>
+    <input type="submit" value="Logga in" />
+  </form>
+  {% endif %}
+</body>
+
+</html>

@@ -6,10 +6,20 @@
 </head>
 
 <body>
-  <h1>Välkommen!</h1>
+  {% if session.username %}
+  <h1>Välkommen, {{ session.username }}</h1>
   <p>
-    Sover du gott?
+    Sov du gott?<br>
+    <a href="/logout">Logga ut</a>
   </p>
+  {% else %}
+  <h1>Sömnapp</h1>
+  <p>
+    Vad drömmer du om på natten?<br>
+    <a href="/login">Logga in</a>
+    <a href="/register">Skapa konto</a>
+  </p>
+  {% endif %}
 </body>
 
 </html>
