@@ -24,6 +24,9 @@ def query(sql, params=[]):
     return result
 
 def update_schema():
-    with open("schema.sql") as schema:
-        con = get_connection()
-        con.executescript(schema.read())
+    try:
+        with open("schema.sql") as schema:
+            con = get_connection()
+            con.executescript(schema.read())
+    except Exception as ex:
+        print(ex)
