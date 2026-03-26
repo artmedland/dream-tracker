@@ -23,6 +23,7 @@ def query(sql, params=[]):
     con.close()
     return result
 
+# not working yet
 def update_schema():
     try:
         with open("schema.sql") as schema:

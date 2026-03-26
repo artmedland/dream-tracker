@@ -9,5 +9,5 @@ CREATE TABLE Posts (
     poster_id INTEGER REFERENCES Users(id),
     title TEXT,
     sleep_quality INTEGER,
-    dream_description TEXT
+    dream TEXT
 );

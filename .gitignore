@@ -9,3 +9,4 @@ temp/
 database.db
 config/.secret_key
 /.vscode
+db_tester.py
