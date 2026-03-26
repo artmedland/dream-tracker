@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Nytt inlägg</title>
+</head>
+
+<body>
+  <form action="/publish" method="post">
+    <p>
+      Titel: <br />
+      <input type="text" name="title" />
+    </p>
+    <p>
+      Sov du gott? <br />
+
+      <input type="radio" id="lowq" name="sleep_quality" value="1" />
+      <label for="lowq">nej</label> <br />
+      
+      <input type="radio" id="midq" name="sleep_quality" value="2" />
+      <label for="midq">ok</label> <br />
+      
+      <input type="radio" id="highq" name="sleep_quality" value="3" />
+      <label for="highq">bra</label> <br />
+    </p>
+    <p>
+      Vad drömde du om? <br />
+      <textarea name="dream" rows="10" cols="64"></textarea>
+    </p>
+    <input type="submit" value="Publicera" />
+  </form>
+</body>
+
+</html>

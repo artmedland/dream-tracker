@@ -9,17 +9,35 @@ import db
 
 app = Flask(__name__)
 app.secret_key = config.get_session_key()
+db.update_schema()
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
+@app.route("/draft")
+def new_post():
+    return render_template("draft.html")
+
+@app.route("/publish", methods=["POST"])
+def publish():
+    user_id = session["user_id"]
+    title = request.form["title"]
+    quality = request.form["sleep_quality"]
+    dream = request.form["dream"]
+
+    db.execute("""
+        INSERT INTO Posts (poster_id, title, sleep_quality, dream_description)
+        VALUES (?, ?, ?, ?)
+    """, [user_id, title, quality, dream])
+    return redirect("/")
+
 @app.route("/register")
 def register():
     return render_template("register.html")
 
-@app.route("/create", methods=["POST"])
-def create():
+@app.route("/create_user", methods=["POST"])
+def create_user():
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
@@ -38,6 +56,12 @@ def create():
     session["username"] = username
     return "Användarkonto skapat"
 
+# @app.route("/error", params?)
+# def error(back: str, params: list = []):
+#     view render_template("error.html") + params
+#     time.sleep(3 seconds)
+#     return render_template(back)
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
@@ -46,10 +70,13 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
 
-    sql = "SELECT password_hash FROM Users WHERE username = ?"
-    password_hash = db.query(sql, [username])[0][0]
+    query = "SELECT id, password_hash FROM Users WHERE username = ?"
+    sql = db.query(query, [username])[0]
+    user_id = sql["id"]
+    password_hash = sql["password_hash"]
 
     if check_password_hash(password_hash, password):
+        session["user_id"] = user_id
         session["username"] = username
         return redirect("/")
     else:
@@ -57,5 +84,6 @@ def login():
 
 @app.route("/logout")
 def logout():
+    del session["user_id"]
     del session["username"]
     return redirect("/")
