@@ -34,6 +34,9 @@ def update(pid, title, quality, dream):
     WHERE id = ?
     """, [title, quality, dream, pid])
 
+def delete(pid):
+    db.execute("DELETE FROM Posts WHERE id = ?", [pid])
+
 def user_count():
     query = "SELECT COUNT(id) count FROM Users"
     return db.query(query)[0]["count"]

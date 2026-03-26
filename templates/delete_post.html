@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Radera inlägget</title>
+</head>
+
+<body>
+  <h1>Radera inlägget {{ post.title }}</h1>
+  <p>
+    Är du säker att du vill radera detta inlägg?<br>
+    Detta kan inte ångras senare.
+  </p>
+  <form action="/delete_post/{{ post.pid }}" method="post">
+    <input type="submit" name="delete" value="Radera">
+    <input type="submit" name="back" value="Ångra">
+  </form>
+</body>
+
+</html>

@@ -57,6 +57,17 @@ def edit():
     posts.update(pid, title, quality, dream)
     return redirect(f"post/{pid}")
 
+@app.route("/delete_post/<int:pid>", methods=["GET", "POST"])
+def delete_post(pid):
+    if request.method == "GET":
+        post = posts.get(pid)
+        return render_template("delete_post.html", post=post)
+    
+    if "delete" in request.form:
+        posts.delete(pid)
+        return redirect("/")
+    return redirect(f"/post/{pid}")
+
 @app.route("/register")
 def register():
     return render_template("register.html")
