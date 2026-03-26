@@ -7,20 +7,33 @@
 
 <body>
   {% if session.username %}
-  <h1>Välkommen, {{ session.username }}</h1>
+  <h1>Välkommen, {{ session.username }}!</h1>
   <p>
     Sov du gott?<br>
-    <a href="/logout">Logga ut</a>
     <a href="/draft">Nytt inlägg</a>
+    <a href="/logout">Logga ut</a>
   </p>
   {% else %}
   <h1>Sömnapp</h1>
   <p>
     Vad drömmer du om på natten?<br>
-    <a href="/login">Logga in</a>
     <a href="/register">Skapa konto</a>
+    <a href="/login">Logga in</a>
   </p>
   {% endif %}
+
+  <p>
+    Det finns {{ user_count }} användare 
+    och {{ post_count }} inlägg.
+  </p>
+
+  <h2></h2>
+  <ul>
+    {% for post in posts %}
+    <li><b><a href="/post/{{ post.id }}">{{ post.title }}</a></b> 
+      av {{ post.username }}</li>
+    {% endfor %}
+  </ul>
 </body>
 
 </html>

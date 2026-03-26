@@ -1,12 +1,13 @@
 from flask import Flask
 from flask import render_template, request, redirect, session
+import sqlite3
 
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 
-import sqlite3
 import config
 import db
+import posts
 
 app = Flask(__name__)
 app.secret_key = config.get_session_key()
@@ -14,7 +15,17 @@ db.update_schema()
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    published = posts.get()
+    return render_template(
+        "index.html", 
+        user_count=posts.user_count(),
+        post_count=posts.post_count(),
+        posts=published)
+
+@app.route("/post/<int:post_id>")
+def display_post(post_id):
+    post = posts.get(post_id)
+    return render_template("display.html", post=post)
 
 @app.route("/draft")
 def new_post():
@@ -27,10 +38,8 @@ def publish():
     quality = request.form["sleep_quality"]
     dream = request.form["dream"]
 
-    db.execute("""
-        INSERT INTO Posts (poster_id, title, sleep_quality, dream)
-        VALUES (?, ?, ?, ?)
-    """, [user_id, title, quality, dream])
+    posts.add(user_id, title, quality, dream)
+
     return redirect("/")
 
 @app.route("/register")
@@ -59,13 +68,13 @@ def create_user():
 
     session["user_id"] = user_id 
     session["username"] = username
-    return "Användarkonto skapat"
+    return redirect("/")
 
-# @app.route("/error", params?)
-# def error(back: str, params: list = []):
-#     view render_template("error.html") + params
-#     time.sleep(3 seconds)
-#     return render_template(back)
+# @app.route("/redirect")
+# def delayed_redirect(params?):
+# disp params
+# time.sleep(3)
+# return redirect("/")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
