@@ -1,5 +1,6 @@
 from flask import Flask
-from flask import render_template, request, redirect, session
+from flask import render_template, session
+from flask import abort, request, redirect
 import sqlite3
 
 from werkzeug.security import generate_password_hash
@@ -8,6 +9,7 @@ from werkzeug.security import check_password_hash
 import config
 import db
 import posts
+
 
 app = Flask(__name__)
 app.secret_key = config.get_session_key()
@@ -45,11 +47,17 @@ def publish():
 @app.route("/edit_post/<int:pid>")
 def edit_post(pid):
     post = posts.get(pid)
+    if post["user_id"] != session["user_id"]:
+        abort(403)
     return render_template("edit_post.html", post=post)
 
 @app.route("/edit", methods=["POST"])
 def edit():
     pid = request.form["post_id"]
+    post = posts.get(pid)
+    if post["user_id"] != session["user_id"]:
+        abort(403)
+
     title = request.form["title"]
     quality = request.form["sleep_quality"]
     dream = request.form["dream"]
@@ -59,8 +67,11 @@ def edit():
 
 @app.route("/delete_post/<int:pid>", methods=["GET", "POST"])
 def delete_post(pid):
+    post = posts.get(pid)
+    if post["user_id"] != session["user_id"]:
+        abort(403)
+
     if request.method == "GET":
-        post = posts.get(pid)
         return render_template("delete_post.html", post=post)
     
     if "delete" in request.form:
