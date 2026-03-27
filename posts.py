@@ -33,7 +33,7 @@ def update(pid, title, quality, dream):
         dream = ?,
         sleep_quality = ?
     WHERE id = ?
-    """, [title, quality, dream, pid])
+    """, [title, dream, quality, pid])
 
 def delete(pid):
     db.execute("DELETE FROM Posts WHERE id = ?", [pid])
