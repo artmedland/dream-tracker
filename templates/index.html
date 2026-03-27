@@ -3,6 +3,7 @@
 
 <head>
   <title>Sömnapp &mdash; Framsida</title>
+  <link rel="stylesheet" href="/static/main.css" /> 
 </head>
 
 <body>
@@ -10,7 +11,7 @@
   <h1>Välkommen, {{ session.username }}!</h1>
   <p>
     Sov du gott?<br>
-    <a href="/draft">Nytt inlägg</a>
+    <a href="/draft">Nytt inlägg</a><br>
     <a href="/logout">Logga ut</a>
   </p>
   {% else %}
