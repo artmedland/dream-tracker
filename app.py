@@ -20,6 +20,10 @@ db.update_schema()
 def logged_in() -> bool:
     return "user_id" in session
 
+# TODO - Refactor: move authentication to e.g. auth.py
+#                  user management to users.py
+#                  and post management to posts.py or site.py
+
 @app.route("/")
 def index():
     published = posts.get()
@@ -110,7 +114,7 @@ def delete_post(pid):
 
     if request.method == "GET":
         return render_template("delete_post.html", post=post)
-    
+
     if "delete" in request.form:
         posts.delete(pid)
         return redirect("/")
@@ -132,7 +136,7 @@ def create_user():
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
-    
+
     if len(username) > config.MAX_USERNAME_LENGTH:
         return "FEL: Användarnamnet är för långt"
 
@@ -183,8 +187,8 @@ def login():
         session["user_id"] = user_id
         session["username"] = username
         return redirect("/")
-    else:
-        return "FEL: Fel användarnamn eller lösenord"
+
+    return "FEL: Fel användarnamn eller lösenord"
 
 @app.route("/logout")
 def logout():
