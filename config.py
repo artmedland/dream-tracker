@@ -7,7 +7,7 @@ MAX_USERNAME_LENGTH = 22
 USERNAME_RESTRICTION = "[a-zA-Z0-9]+"
 MIN_PASSWORD_LENGTH = 1
 
-session_key = None
+#session_key = None
 
 WORKING_DIR = Path(__file__).parent
 CONFIG_PATH = WORKING_DIR / "config"

@@ -19,10 +19,6 @@ db.update_schema()
 def logged_in() -> bool:
     return "user_id" in session
 
-# TODO - Refactor: move authentication to e.g. auth.py
-#                  user management to users.py
-#                  and post management to posts.py or site.py
-
 @app.route("/")
 def index():
     published = posts.get()
@@ -36,7 +32,12 @@ def index():
 def user_page(uid):
     user = users.get(uid) or abort(404)
     posts = users.posts(uid)
-    return render_template("user_page.html", user=user, posts=posts)
+    time = users.join_date(uid, user["created_at"])
+    return render_template(
+        "user_page.html", 
+        user=user, 
+        posts=posts,
+        time=time)
 
 @app.route("/post/<int:post_id>")
 def display_post(post_id):
