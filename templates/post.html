@@ -8,7 +8,7 @@
 
 <body>
   <h2>{{ post.title }}</h2> 
-  <i>av {{ post.username }}</i>
+  <i>av </i><a href="/user/{{ post.uid }}">{{ post.username }}</a>
   <p>Sömnkvalitet: {{ post.sleep_quality }}</p>
   <p>{{ post.dream }}</p>
   {% if session.user_id == post.uid %}

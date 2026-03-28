@@ -2,14 +2,14 @@ from flask import Flask
 from flask import render_template, session
 from flask import abort, request, redirect
 
-import sqlite3
-import re
-
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 
-import config
+import sqlite3
+import re
+
 import db
+import config
 import posts
 
 
@@ -36,7 +36,7 @@ def index():
 @app.route("/post/<int:post_id>")
 def display_post(post_id):
     post = posts.get(post_id) or abort(404)
-    return render_template("display.html", post=post)
+    return render_template("post.html", post=post)
 
 @app.route("/draft")
 def new_post():
