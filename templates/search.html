@@ -13,11 +13,20 @@
     <p>
       Sökord: <input type="text" name="q" value="{{ q }}">
     </p>
+    <p>
+      Sömnkvalitet: 
+      <select name="by_quality">
+        <option value="none">(ingen skillnad)</option>
+        <option value="bra">bra</option>
+        <option value="meh">meh</option>
+        <option value="dålig">dålig</option>
+      </select>
+    </p>
     <input type="submit" name="find" value="Sök">
     <a href="/">Tillbaka</a>
   </form>
 
-  {% if q %}
+  {% if q or filter %}
   <h2>Inlägg</h2>
     {% if results and results|length > 0 %}
     <ul>

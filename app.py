@@ -129,9 +129,20 @@ def delete_post(pid):
 
 @app.route("/search")
 def search():
+    quality_filter = request.args.get("by_quality")
+    if quality_filter == "none":
+        quality_filter = ""
+
     query = request.args.get("q") or ""
-    results = posts.find(query) if query else []
-    return render_template("search.html", q=query, results=results)
+    if query or quality_filter:
+        results = posts.find(query, quality_filter)
+    else:
+        results = []
+    print(results)
+    return render_template("search.html", 
+        q=query, 
+        filter=quality_filter,
+        results=results)
 
 @app.route("/register")
 def register():

@@ -29,6 +29,14 @@
   <a href="/search">Sök efter inlägg</a>
   </p>
 
+  <p>
+    <select name="filter">
+      <option value="new">Nyaste</option>
+      <option value="popular">Populära</option>
+      <option value="feed">Vänner</option>
+    </select>
+  </p>
+
   <h2></h2>
   <ul>
     {% for post in posts %}

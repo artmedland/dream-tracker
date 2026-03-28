@@ -31,6 +31,12 @@ def get(uid=None):
         return post[0] if post else None
     raise NotImplementedError
 
+def get_popular_posts():
+    raise NotImplementedError
+
+def get_friend_posts():
+    raise NotImplementedError
+
 def update(pid, title, quality, dream):
     """Modifies a post's content."""
     db.execute("""
@@ -45,9 +51,20 @@ def delete(pid):
     """Removes a post from the database."""
     db.execute("DELETE FROM Posts WHERE id = ?", [pid])
 
-def find(query):
+def find(query, quality=""):
     """Finds a post whose title or content contains the given query."""
     ex = f"%{query}%"
+
+    if quality != "":
+        return db.query("""
+            SELECT id, title
+            FROM Posts
+            WHERE sleep_quality = ?
+              AND (title LIKE ? 
+               OR dream LIKE ?)
+            ORDER BY id DESC
+        """, [quality, ex, ex])
+    
     return db.query("""
         SELECT id, title
         FROM Posts
