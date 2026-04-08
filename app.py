@@ -46,11 +46,11 @@ def index():
         post_count=posts.post_count(),
         posts=published)
 
-@app.route("/user/<int:uid>")
-def user_page(uid):
-    user = users.get(uid) or abort(404)
-    posts = users.posts(uid)
-    time = users.join_date(uid, user["created_at"])
+@app.route("/user/<int:user_id>")
+def user_page(user_id):
+    user = users.get(user_id) or abort(404)
+    posts = users.posts(user_id)
+    time = users.join_date(user_id, user["created_at"])
     return render_template(
         "user_page.html", 
         user=user, 
@@ -90,14 +90,14 @@ def publish():
 
     return redirect("/")
 
-@app.route("/edit_post/<int:pid>")
-def edit_post(pid):
+@app.route("/edit_post/<int:post_id>")
+def edit_post(post_id):
     if not logged_in():
         abort(403)
 
-    post = posts.get(pid) or abort(404)
+    post = posts.get(post_id) or abort(404)
 
-    if post["uid"] != session["user_id"]:
+    if post["user_id"] != session["user_id"]:
         abort(403)
 
     return render_template("edit_post.html", post=post,
@@ -109,10 +109,10 @@ def edit():
     if not logged_in():
         abort(403)
 
-    pid = request.form["post_id"]
-    post = posts.get(int(pid)) or abort(404)
+    post_id = request.form["post_id"]
+    post = posts.get(int(post_id)) or abort(404)
 
-    if post["uid"] != session["user_id"]:
+    if post["user_id"] != session["user_id"]:
         abort(403)
 
     title = request.form["title"]
@@ -124,26 +124,26 @@ def edit():
     if len(dream) > config.MAX_DREAM_LENGTH:
         abort(403)
 
-    posts.update(pid, title, quality, dream)
-    return redirect(f"post/{pid}")
+    posts.update(post_id, title, quality, dream)
+    return redirect(f"post/{post_id}")
 
-@app.route("/delete_post/<int:pid>", methods=["GET", "POST"])
-def delete_post(pid):
+@app.route("/delete_post/<int:post_id>", methods=["GET", "POST"])
+def delete_post(post_id):
     if not logged_in():
         abort(403)
 
-    post = posts.get(pid) or abort(404)
-    if post["uid"] != session["user_id"]:
+    post = posts.get(post_id) or abort(404)
+    if post["user_id"] != session["user_id"]:
         abort(403)
 
     if request.method == "GET":
         return render_template("delete_post.html", post=post)
 
     if "delete" in request.form:
-        posts.delete(pid)
+        posts.delete(post_id)
         return redirect("/")
 
-    return redirect(f"/post/{pid}")
+    return redirect(f"/post/{post_id}")
 
 @app.route("/search")
 def search():

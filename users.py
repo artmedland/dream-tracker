@@ -5,20 +5,20 @@ from datetime import datetime
 
 import db
 
-def get(uid):
+def get(user_id):
     """Retrieves the information associated with a user by uid."""
     query = """
         SELECT id, username, created_at
         FROM Users
         WHERE id = ?"""
-    user = db.query(query, [uid])
+    user = db.query(query, [user_id])
     return user[0] if user else None
 
-def join_date(uid, time=""):
+def join_date(user_id, time=""):
     """Gets or formats a given user's join date."""
     if not time:
         query = "SELECT created_at FROM Users WHERE id = ?"
-        time = db.query(query, [uid])[0]["created_at"]
+        time = db.query(query, [user_id])[0]["created_at"]
     time = datetime.strptime(time, "%Y-%m-%d %H:%M:%S.%f")
     return time.strftime("%d/%m/%Y")
 
@@ -29,7 +29,7 @@ def posts(uid):
         FROM Posts
         WHERE poster_id = ?
         ORDER BY id DESC"""
-    return db.query(query, [uid])
+    return db.query(query, [user_id])
 
 def register(username, password):
     """Creates a new user account with given username and password."""
@@ -38,8 +38,8 @@ def register(username, password):
              VALUES (?, ?, ?)"""
     db.execute(sql, [username, password_hash, datetime.now()])
 
-    uid = """SELECT id FROM Users WHERE username = ?"""
-    return db.query(uid, [username])[0]["id"]
+    user_id = """SELECT id FROM Users WHERE username = ?"""
+    return db.query(user_id, [username])[0]["id"]
 
 # TODO Rename & rework, e.g. get_password_hash()
 def login(username, password):

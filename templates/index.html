@@ -41,7 +41,7 @@
   <ul>
     {% for post in posts %}
     <li><b><a href="/post/{{ post.id }}">{{ post.title }}</a></b> 
-      av <a href="/user/{{ post.uid }}">{{ post.username }}</a></li>
+      av <a href="/user/{{ post.user_id }}">{{ post.username }}</a></li>
     {% endfor %}
   </ul>
 </body>

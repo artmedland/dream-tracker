@@ -8,13 +8,13 @@
 
 <body>
   <h2>{{ post.title }}</h2> 
-  <i>av </i><a href="/user/{{ post.uid }}">{{ post.username }}</a>
+  <i>av </i><a href="/user/{{ post.user_id }}">{{ post.username }}</a>
   <p>Sömnkvalitet: {{ post.sleep_quality }}</p>
   <p>{{ post.dream }}</p>
-  {% if session.user_id == post.uid %}
+  {% if session.user_id == post.user_id %}
   <p>
-    <a href="/edit_post/{{ post.pid }}">Redigera</a>
-    <a href="/delete_post/{{ post.pid }}">Radera</a>
+    <a href="/edit_post/{{ post.post_id }}">Redigera</a>
+    <a href="/delete_post/{{ post.post_id }}">Radera</a>
   </p>
   {% endif %}
   <br /><a href="/">Tillbaka</a>
