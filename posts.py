@@ -74,6 +74,20 @@ def find(query, quality=""):
         ORDER BY id DESC
     """, [ex, ex])
 
+def add_comment(post_id, user_id, content):
+    db.execute("""
+        INSERT INTO Comments (post_id, user_id, content)
+        VALUES (?, ?, ?)
+    """, [post_id, user_id, content])
+
+def get_comments(post_id):
+    return db.query("""
+        SELECT c.content, u.id user_id, u.username
+        FROM Comments c, Users u
+        WHERE c.post_id = ? AND c.user_id = u.id
+        ORDER BY c.id DESC
+    """, [post_id])
+
 def user_count():
     query = "SELECT COUNT(id) count FROM Users"
     return db.query(query)[0]["count"]

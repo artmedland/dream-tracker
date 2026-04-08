@@ -17,6 +17,30 @@
     <a href="/delete_post/{{ post.post_id }}">Radera</a>
   </p>
   {% endif %}
+
+  <h3>Kommentar</h3>
+  <form action="/comment" method="post">
+    <textarea name="comment" rows="1" cols="45" maxlength="320"
+    placeholder="Kommentera något..." required></textarea> 
+    <br />
+    <input type="hidden" name="post_id" value="{{ post.post_id }}" />
+    <input type="submit" name="submit" value="Publicera" />
+  </form>
+  {% if comments %}
+    <ul class="comments">
+    {% for comment in comments %}
+      <li>
+        <b><a href="/user/{{ comment.user_id }}">
+          {{ comment.username }}</a></b>: 
+        {{ comment.content }}
+      </li>
+    {% endfor %}
+    </ul>
+  {% else %}
+  <p>
+    Inga kommentar ännu...
+  </p>
+  {% endif %}
   <br /><a href="/">Tillbaka</a>
 </body>
 

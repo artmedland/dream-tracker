@@ -12,3 +12,10 @@ CREATE TABLE Posts (
     sleep_quality TEXT,
     dream TEXT
 );
+
+CREATE TABLE Comments (
+    id INTEGER PRIMARY KEY,
+    post_id INTEGER REFERENCES Posts(id),
+    user_id INTEGER REFERENCES Users(id),
+    content TEXT NOT NULL
+);
