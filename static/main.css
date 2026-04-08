@@ -9,3 +9,14 @@ body {
 a {
     color: #373737c3;
 }
+
+textarea {
+    min-width: 12em;
+    max-width: 36em;
+    min-height: 2em;
+    field-sizing: content;
+}
+
+.comments {
+    list-style-type: none;
+}
