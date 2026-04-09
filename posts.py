@@ -88,6 +88,27 @@ def get_comments(post_id):
         ORDER BY c.id DESC
     """, [post_id])
 
+def like(post_id, user_id, state):
+    if state:
+        db.execute("""
+            INSERT INTO Likes (post_id, user_id)
+            VALUES (?, ?)
+        """, [post_id, user_id])
+    else:
+        db.execute("""
+            DELETE FROM Likes
+            WHERE post_id = ? 
+            AND user_id = ?
+        """, [post_id, user_id])
+
+def get_likes(post_id):
+    query = "SELECT user_id FROM Likes WHERE post_id = ?"
+    return db.query(query, [post_id])
+
+def like_count(post_id):
+    query = "SELECT COUNT(user_id) count FROM Likes WHERE post_id = ?"
+    return db.query(query, [post_id])[0]["count"]
+
 def user_count():
     query = "SELECT COUNT(id) count FROM Users"
     return db.query(query)[0]["count"]

@@ -19,3 +19,10 @@ CREATE TABLE Comments (
     user_id INTEGER REFERENCES Users(id),
     content TEXT NOT NULL
 );
+
+CREATE TABLE Likes (
+    id INTEGER PRIMARY KEY,
+    post_id INTEGER REFERENCES Posts(id),
+    user_id INTEGER REFERENCES Users(id),
+    UNIQUE(post_id, user_id)
+);

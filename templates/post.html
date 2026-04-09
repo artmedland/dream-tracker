@@ -17,6 +17,13 @@
     <a href="/delete_post/{{ post.post_id }}">Radera</a>
   </p>
   {% endif %}
+  
+  <form action="/like" method="post">
+    <input type="hidden" name="post_id" value="{{ post.post_id }}" />
+    <input type="submit" name="toggle_like" 
+      value="{{ 'Ogilla' if is_liked else 'Gilla' }}" />
+    {{ likes | count }} användare gillar detta
+  </form>
 
   <h3>Kommentar</h3>
   <form action="/comment" method="post">

@@ -61,7 +61,20 @@ def user_page(user_id):
 def display_post(post_id):
     post = posts.get(post_id) or abort(404)
     comments = posts.get_comments(post_id)
-    return render_template("post.html", post=post, comments=comments)
+    likes = posts.get_likes(post_id)
+
+    user_id = session["user_id"]
+
+    is_liked = False
+    if user_id:
+        is_liked = users.has_liked(user_id, post_id)
+
+    return render_template(
+        "post.html", 
+        post=post, 
+        comments=comments,
+        is_liked=is_liked,
+        likes=likes)
 
 @app.route("/draft")
 def new_post():
@@ -91,6 +104,24 @@ def publish():
 
     return redirect("/")
 
+@app.route("/like", methods=["POST"])
+def like():
+    if not logged_in():
+        abort(403)
+
+    post_id = request.form["post_id"]
+    user_id = session["user_id"]
+    post = posts.get(post_id) or abort(404)
+
+    try:
+        state = not users.has_liked(user_id, post_id)
+        posts.like(post_id, user_id, state=state)
+    except sqlite3.IntegrityError as ex:
+        print(ex)
+        abort(500)
+
+    return redirect(f"/post/{post_id}")
+
 @app.route("/comment", methods=["POST"])
 def comment():
     if not logged_in():
@@ -99,11 +130,10 @@ def comment():
     comment = request.form["comment"]
     if len(comment) < 1 or len(comment) > 320:
         abort(403)
+
     user_id = session["user_id"]
-    
     post_id = request.form["post_id"]
-    post = posts.get(post_id) or abort(403)
-    
+
     posts.add_comment(post_id, user_id, comment)
 
     return redirect(f"/post/{post_id}")
