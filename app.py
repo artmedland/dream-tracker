@@ -2,6 +2,8 @@ from flask import Flask
 from flask import render_template, session
 from flask import abort, request, redirect
 
+from markupsafe import Markup, escape
+
 import sqlite3
 import re
 
@@ -36,6 +38,12 @@ db.update_schema()
 
 def logged_in() -> bool:
     return "user_id" in session
+
+@app.template_filter()
+def show_lines(content):
+    content = str(escape(content))
+    content = content.replace("\n", "<br />")
+    return Markup(content)
 
 @app.route("/")
 def index():
