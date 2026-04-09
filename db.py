@@ -1,4 +1,4 @@
-from sqlite3 import Row, connect
+from sqlite3 import Row, connect, OperationalError
 from flask import g
 
 def get_connection():
@@ -23,11 +23,18 @@ def query(sql, params=[]):
     con.close()
     return result
 
-# TODO: fix me lol
 def update_schema():
-    try:
-        with open("schema.sql") as schema:
-            con = get_connection()
-            con.executescript(schema.read())
-    except Exception as ex:
-        print(ex)
+    with open("schema.sql") as schema:
+        con = get_connection()
+        sql = schema.read() + "\n"
+        blocks = sql.split("\n\n")
+        
+        debug_message("Initializing database tables...")
+        for block in blocks:
+            try:
+                con.executescript(block)
+            except OperationalError as ex:
+                debug_message(ex, indent=4)
+
+def debug_message(message, indent=2):
+    print(f"{' '*indent} > {message}")
