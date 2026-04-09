@@ -49,6 +49,8 @@ def update(post_id, title, quality, dream):
 
 def delete(post_id):
     """Removes a post from the database."""
+    db.execute("DELETE FROM Likes WHERE post_id = ?", [post_id])
+    db.execute("DELETE FROM Comments WHERE post_id = ?", [post_id])
     db.execute("DELETE FROM Posts WHERE id = ?", [post_id])
 
 # TODO better filter handling

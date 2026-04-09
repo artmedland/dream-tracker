@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}Felsituation &mdash; {{ error.code }}{% endblock %}
+{% block content %}
+
+<body>
+<div class="error">
+  <p><b>Någonting gick fel.</b></p>
+  <p>
+    {{ error.code }} &mdash; {{ error.name }}
+  </p>
+  <p>
+    {{ error.description }}
+  </p>
+</div>
+<div class="error_back">
+  <a href="{{ prev }}">Tillbaka</a>
+</div>
+</body>
+
+{% endblock %}

@@ -2,6 +2,7 @@ from flask import Flask
 from flask import render_template, session
 from flask import abort, request, redirect
 
+from werkzeug.exceptions import HTTPException
 from markupsafe import Markup, escape
 
 import sqlite3
@@ -56,7 +57,7 @@ def index():
 
 @app.route("/user/<int:user_id>")
 def user_page(user_id):
-    user = users.get(user_id) or abort(404)
+    user = users.get(user_id) or abort(404, "Ingen användare hittades.")
     posts = users.posts(user_id)
     time = users.join_date(user_id, user["created_at"])
     likes = users.get_likes(user_id)
@@ -72,7 +73,7 @@ def user_page(user_id):
 
 @app.route("/post/<int:post_id>")
 def display_post(post_id):
-    post = posts.get(post_id) or abort(404)
+    post = posts.get(post_id) or abort(404, "Inlägget hittades inte.")
     comments = posts.get_comments(post_id)
     likes = posts.get_likes(post_id)
 
@@ -91,7 +92,7 @@ def display_post(post_id):
 @app.route("/draft")
 def new_post():
     if not logged_in():
-        abort(403)
+        abort(401, "Du måste vara inloggad.")
 
     return render_template("draft.html",
         title_max=config.MAX_TITLE_LENGTH,
@@ -100,7 +101,7 @@ def new_post():
 @app.route("/publish", methods=["POST"])
 def publish():
     if not logged_in():
-        abort(403)
+        abort(401, "Du måste vara inloggad.")
     
     user_id = session["user_id"]
     title = request.form["title"]
@@ -108,9 +109,9 @@ def publish():
     dream = request.form["dream"]
     
     if len(title) < 1 or len(title) > config.MAX_TITLE_LENGTH:
-        abort(403)
+        abort(403, "Titeln har fel längd")
     if len(dream) > config.MAX_DREAM_LENGTH:
-        abort(403)
+        abort(403, "Texten är för lång")
 
     posts.add(user_id, title, quality, dream)
 
@@ -119,29 +120,29 @@ def publish():
 @app.route("/like", methods=["POST"])
 def like():
     if not logged_in():
-        abort(403)
+        abort(401, "Du måste vara inloggad.")
 
     post_id = request.form["post_id"]
     user_id = session["user_id"]
-    post = posts.get(post_id) or abort(404)
+    post = posts.get(post_id) or abort(404, "Inlägget hittades inte.")
 
     try:
         state = not users.has_liked(user_id, post_id)
         posts.like(post_id, user_id, state=state)
     except sqlite3.IntegrityError as ex:
         print(ex)
-        abort(500)
+        abort(500, "Inlägget har redan gillats.")
 
     return redirect(f"/post/{post_id}")
 
 @app.route("/comment", methods=["POST"])
 def comment():
     if not logged_in():
-        abort(403)
+        abort(401, "Du måste vara inloggad.")
 
     comment = request.form["comment"]
     if len(comment) < 1 or len(comment) > 320:
-        abort(403)
+        abort(403, "Kommentarens längd är fel.")
 
     user_id = session["user_id"]
     post_id = request.form["post_id"]
@@ -153,9 +154,9 @@ def comment():
 @app.route("/edit_post/<int:post_id>")
 def edit_post(post_id):
     if not logged_in():
-        abort(403)
+        abort(401, "Du måste vara inloggad.")
 
-    post = posts.get(post_id) or abort(404)
+    post = posts.get(post_id) or abort(404, "Inlägget hittades inte.")
 
     if post["user_id"] != session["user_id"]:
         abort(403)
@@ -167,7 +168,7 @@ def edit_post(post_id):
 @app.route("/edit", methods=["POST"])
 def edit():
     if not logged_in():
-        abort(403)
+        abort(401, "Du måste vara inloggad.")
 
     post_id = request.form["post_id"]
     post = posts.get(int(post_id)) or abort(404)
@@ -180,9 +181,9 @@ def edit():
     dream = request.form["dream"]
 
     if len(title) < 1 or len(title) > config.MAX_TITLE_LENGTH:
-        abort(403)
+        abort(403, "Titelns längd är fel.")
     if len(dream) > config.MAX_DREAM_LENGTH:
-        abort(403)
+        abort(403, "Texten är för lång.")
 
     posts.update(post_id, title, quality, dream)
     return redirect(f"post/{post_id}")
@@ -190,9 +191,9 @@ def edit():
 @app.route("/delete_post/<int:post_id>", methods=["GET", "POST"])
 def delete_post(post_id):
     if not logged_in():
-        abort(403)
+        abort(401, "Du måste vara inloggad.")
 
-    post = posts.get(post_id) or abort(404)
+    post = posts.get(post_id) or abort(404, "Inlägget hittades inte.")
     if post["user_id"] != session["user_id"]:
         abort(403)
 
@@ -233,23 +234,23 @@ def create_user():
     password2 = request.form["password2"]
 
     if len(username) > config.MAX_USERNAME_LENGTH:
-        return "FEL: Användarnamnet är för långt"
+        abort(403, "Användarnamnet är för långt.")
 
     regex = config.USERNAME_RESTRICTION
     if not re.fullmatch(regex, username) or len(username) < 1:
-        return ("FEL: Användarnamnet får inte innehålla"
-                " specialtecken eller mellanslag")
+        abort(403, ("FEL: Användarnamnet får inte innehålla"
+                    " specialtecken eller mellanslag"))
 
     if password1 != password2:
-        return "FEL: Lösenord stämmer inte överens"
+        abort(403, "FEL: Lösenord stämmer inte överens")
 
     if len(password1) < config.MIN_PASSWORD_LENGTH:
-        return "FEL: Lösenordet är för kort"
+        abort(403, "FEL: Lösenordet är för kort")
 
     try:
         user_id = users.register(username, password1)
     except sqlite3.IntegrityError:
-        return "FEL: Användarnamnet kan inte användas"
+        abort(403, "FEL: Användarnamnet kan inte användas")
 
     session["user_id"] = user_id 
     session["username"] = username
@@ -265,7 +266,7 @@ def login():
 
     result = users.login(username, password)
     if not result:
-        abort(403)
+        abort(403, "Användarnamnet hittades ej.")
 
     user_id = result["id"]
     password_hash = result["password_hash"]
@@ -275,7 +276,7 @@ def login():
         session["username"] = username
         return redirect("/")
 
-    return "FEL: Fel användarnamn eller lösenord"
+    abort(404, "FEL: Fel användarnamn eller lösenord")
 
 @app.route("/logout")
 def logout():
@@ -283,3 +284,7 @@ def logout():
         del session["user_id"]
         del session["username"]
     return redirect("/")
+
+@app.errorhandler(HTTPException)
+def error_page(e, prev="/"):
+    return render_template("error.html", error=e, prev=prev), e.code
