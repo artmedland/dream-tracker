@@ -18,6 +18,16 @@
     <li><a href="/post/{{ post.id }}">{{ post.title }}</a></li>
     {% endfor %}
   </ul>
+  <h3>Gillade inlägg</h3>
+  {% if likes %}
+  <ul>
+    {% for liked in likes %}
+    <li><a href="/post/{{ liked.post_id }}">{{ liked.title }}</a></li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    Inga gillade inlägg.
+  {% endif %}
   <p>
     <a href="/">Tillbaka</a>
   </p>
