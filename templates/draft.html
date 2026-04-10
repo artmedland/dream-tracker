@@ -3,6 +3,7 @@
 {% block title %}Nytt inlägg{% endblock %}
 {% block content %}
 
+<div class="page"> <div class="page_context">
 <h2>Nytt inlägg</h2>
 <form action="/publish" method="post">
   <p>
@@ -30,5 +31,6 @@
   <input type="submit" value="Publicera" />
   <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
 </form>
+</div> </div>
 
 {% endblock %}

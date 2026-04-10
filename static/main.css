@@ -20,7 +20,7 @@ html, body {
 body {
     font-family: sans-serif;
     background-color: #232323FF;
-    color: #FFFFFFFF
+    color: #FFFFFFFF;
 }
 
 a {
@@ -63,7 +63,31 @@ input {
     text-decoration: none;
 }
 
+.page {
+    max-width: 700px;
+    text-align: left;
+    margin: auto;
+}
+
+.page_context {
+    text-align: left;
+}
+
 .post_preview {
+    box-sizing: border-box;
+    border: 2px solid black;
+    padding: 1rem;
+    margin: 1rem auto;
+    background-color: #343434C2;
+    border-radius: 4px;
+    min-height: 1rem;
+    width: 28rem;
+    text-align: left;
+    align-items: center;
+    overflow: hidden;
+}
+
+.post_preview_padded {
     box-sizing: border-box;
     border: 2px solid black;
     padding: 1rem;

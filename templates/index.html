@@ -17,8 +17,8 @@
 
 <h2></h2>
 {% for post in posts %}
-  <div class="post_preview">
-    <div class="post_title{{'_padded' if post.preview else ''}}">
+  <div class="post_preview{{ '_padded' if post.preview else '' }}">
+    <div class="post_title{{ '_padded' if post.preview else '' }}">
       <a class="p_title" href="/post/{{ post.id }}">{{ post.title }}</a> 
       <span class="p_poster"> 
         av <a class="p_link" href="/user/{{ post.user_id }}">

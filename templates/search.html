@@ -3,6 +3,8 @@
 {% block title %}Sök efter inlägg{% endblock %}
 {% block content %}
 
+<div class="page"> <div class="page_context">
+
 <h2>Sök efter inlägg</h2>
 
 <form action="/search" method="get">
@@ -36,5 +38,6 @@
     Inga sökresultat hittades.
   {% endif %}
 {% endif %}
+</div> </div>
 
 {% endblock %}

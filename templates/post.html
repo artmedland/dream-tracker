@@ -3,6 +3,7 @@
 {% block title %}{{ post.title }}{% endblock %}
 {% block content %}
 
+<div class="page"> <div class="page_context"></div>
 <h2>{{ post.title }}</h2> 
 av <a href="/user/{{ post.user_id }}">{{ post.username }}</a>
 
@@ -49,5 +50,6 @@ av <a href="/user/{{ post.user_id }}">{{ post.username }}</a>
 </p>
 {% endif %}
 <br /><a href="/">Tillbaka</a>
+</div> </div>
 
 {% endblock %}

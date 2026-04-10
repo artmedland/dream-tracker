@@ -3,7 +3,9 @@
 {% block title %}{{ user.username }} profil{% endblock %}
 {% block content %}
 
-<h2>{{ user.username }} profil</h2>
+<div class="page"> <div class="page_context">
+
+<h2>Användare {{ user.username }}</h2>
 <p>Användare sedan {{ time }}.</p>
 <p>
   {{ user.username }} har {{ posts | count }} inlägg.
@@ -42,5 +44,6 @@
 <p>
   <a href="/">Tillbaka</a>
 </p>
+</div> </div>
 
 {% endblock %}
