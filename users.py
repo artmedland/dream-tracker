@@ -47,7 +47,7 @@ def get_likes(user_id):
     """Retrieves all posts liked by the given user ID."""
     query = """
         SELECT p.id post_id, p.title, p.dream, 
-            u.username username
+            u.username username, u.id user_id
         FROM Likes l 
         JOIN Posts p ON l.post_id = p.id
         JOIN Users u ON u.id = p.poster_id

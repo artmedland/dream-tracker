@@ -44,7 +44,7 @@
     {% for post in likes %}
     <div class="post">
       <div class="title">
-        <a class="p_title" href="/post/{{ post.id }}">{{ post.title }}</a>
+        <a class="p_title" href="/post/{{ post.post_id }}">{{ post.title }}</a>
         <span class="p_poster">
           av <a class="p_link" href="/user/{{ post.user_id }}">
             {{ post.username }}
