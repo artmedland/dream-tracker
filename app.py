@@ -12,7 +12,6 @@ import db
 import config
 import posts
 import users
-# import auth
 
 
 app = Flask(__name__)
@@ -77,14 +76,20 @@ def index():
 @app.route("/user/<int:user_id>")
 def user_page(user_id):
     user = users.get(user_id) or abort(404, "Ingen användare hittades.")
-    posts = users.posts(user_id)
+    tab = request.args.get("tab", "posts")
     time = users.join_date(user_id, user["created_at"])
-    likes = users.get_likes(user_id)
-    comments = users.get_comments(user_id)
+
+    posts = users.posts(user_id)
+    comments = users.get_comments(user_id) if tab == "comments" else None
+    likes = users.get_likes(user_id) if tab == "likes" else None
+
+    for i in range(len(posts)):
+        print(dict(posts[i]))
 
     return render_template(
         "user_page.html", 
         user=user, 
+        tab=tab,
         posts=posts,
         time=time,
         likes=likes,

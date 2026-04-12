@@ -25,7 +25,7 @@ def join_date(user_id, time=""):
 def posts(user_id):
     """Retrieves all posts published by a user with the given uid."""
     query = """
-        SELECT id, title
+        SELECT id, title, dream
         FROM Posts
         WHERE poster_id = ?
         ORDER BY id DESC"""
@@ -46,7 +46,8 @@ def get_comments(user_id):
 def get_likes(user_id):
     """Retrieves all posts liked by the given user ID."""
     query = """
-        SELECT p.id post_id, p.title, u.username username
+        SELECT p.id post_id, p.title, p.dream, 
+            u.username username
         FROM Likes l 
         JOIN Posts p ON l.post_id = p.id
         JOIN Users u ON u.id = p.poster_id

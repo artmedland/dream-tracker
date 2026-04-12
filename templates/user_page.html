@@ -1,49 +1,84 @@
 {% extends "layout.html" %}
 
-{% block title %}{{ user.username }} profil{% endblock %}
+{% block title %}Användare {{ user.username }}{% endblock %}
 {% block content %}
 
 <div class="page"> <div class="page_context">
+  
+<div class="profile">
 
-<h2>Användare {{ user.username }}</h2>
-<p>Användare sedan {{ time }}.</p>
-<p>
-  {{ user.username }} har {{ posts | count }} inlägg.
-</p>
-<h3>Inlägg</h3>
-<ul>
-  {% for post in posts %}
-  <li><a href="/post/{{ post.id }}">{{ post.title }}</a></li>
-  {% endfor %}
-</ul>
+  <h2>Användare {{ user.username }}</h2>
 
-<h4>Gillade inlägg</h4>
-{% if likes %}
-<ul>
-  {% for liked in likes %}
-  <li><a href="/post/{{ liked.post_id }}">{{ liked.title }}</a></li>
-  {% endfor %}
-</ul>
-{% else %}
-  Inga gillade inlägg.
-{% endif %}
+  <div class="user_data">
+    Användare sedan {{ time }}.
+    {{ posts | count }} inlägg.
+  </div>
+  
+  <nav class="tabs">
+    <a href="{{ url_for('user_page', user_id=user.id, tab='posts') }}">Inlägg</a> |
+    <a href="{{ url_for('user_page', user_id=user.id, tab='comments')}}">Kommentar</a> |
+    <a href="{{ url_for('user_page', user_id=user.id, tab='likes')}}">Gillade inlägg</a>
+  </nav>
+</div>
 
-<h4>Kommentar</h4>
-{% if comments %}
-  <ul>
+<div class="user_context">
+{% if tab == "comments" %}
+  <h3>Kommentar</h3>
+  {% if comments %}
     {% for comment in comments %}
-    <li>
-      <a href="/post/{{ comment.post_id }}">{{ comment.post_title }}</a>: 
-      {{ comment.content }}
-    </li>
+      <div class="comment">
+        <span class="context">Kommentar på </span>
+        <a class="title" href="/post/{{ comment.post_id }}">{{ comment.post_title }}</a> 
+        <p>
+          {{ comment.content }}
+        </p>
+      </div>
     {% endfor %}
-  </ul>
+  {% else %}
+    Inga kommentar.
+  {% endif %}
+
+{% elif tab == "likes" %}
+  <h3>Gillade inlägg</h3>
+  {% if likes %}
+    {% for post in likes %}
+    <div class="post">
+      <div class="title">
+        <a class="p_title" href="/post/{{ post.id }}">{{ post.title }}</a>
+        <span class="p_poster">
+          av <a class="p_link" href="/user/{{ post.user_id }}">
+            {{ post.username }}
+          </a>
+        </span>
+      </div>
+      <div class="content">
+        {{ post.dream }}
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    Inga gillade inlägg.
+  {% endif %}
+
 {% else %}
-  Inga kommentar.
+  {% if posts %}
+  <h3>Inlägg</h3>
+    {% for post in posts %}
+    <div class="post">
+      <div class="title">
+        <a class="p_title" href="/post/{{ post.id }}">{{ post.title }}</a>
+      </div>
+      <div class="content">
+        {{ post.dream }}
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    Inga inlägg.
+  {% endif %}
 {% endif %}
-<p>
-  <a href="/">Tillbaka</a>
-</p>
+</div>
+
 </div> </div>
 
 {% endblock %}
