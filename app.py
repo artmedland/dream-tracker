@@ -83,8 +83,13 @@ def user_page(user_id):
     comments = users.get_comments(user_id) if tab == "comments" else None
     likes = users.get_likes(user_id) if tab == "likes" else None
 
-    for i in range(len(posts)):
-        print(dict(posts[i]))
+    is_following = False
+    if "user_id" in session:
+        is_following = users.is_following(
+            follower=session["user_id"], 
+            target_user=user_id)
+
+    followers = users.get_followers(user_id)
 
     return render_template(
         "user_page.html", 
@@ -93,7 +98,30 @@ def user_page(user_id):
         posts=posts,
         time=time,
         likes=likes,
-        comments=comments)
+        comments=comments,
+        following=is_following,
+        followers=followers)
+
+@app.route("/follow/<int:user_id>")
+def follow(user_id):
+    toggle_follow(user_id, True)
+    return redirect(f"/user/{user_id}")
+
+@app.route("/unfollow/<int:user_id>")
+def unfollow(user_id):
+    toggle_follow(user_id, False)
+    return redirect(f"/user/{user_id}")
+
+def toggle_follow(user_id, toggle):
+    if not logged_in():
+        abort(403, "Du måste vara inloggad.")
+
+    session_id = session["user_id"]
+    if toggle:
+        users.follow(session_id, user_id)
+    else:
+        users.unfollow(session_id, user_id)
+
 
 @app.route("/post/<int:post_id>")
 def display_post(post_id):

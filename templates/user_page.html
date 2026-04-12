@@ -9,16 +9,25 @@
 
   <h2>Användare {{ user.username }}</h2>
 
-  <div class="user_data">
-    Användare sedan {{ time }}.
-    {{ posts | count }} inlägg.
-  </div>
+  <div class="user_data"><ul>
+    <li>Användare sedan {{ time }}.</li>
+    <li>{{ posts | count }} inlägg.</li>
+    <li>{{ followers | count }} följare.</li>
+    <li><a href="/{{ 'un' if following else '' }}follow/{{ user.id }}">
+      {{ "Följ" if not following else "Sluta följa" }}
+    </a></li>
+  </ul></div>
   
   <nav class="tabs">
     <a href="{{ url_for('user_page', user_id=user.id, tab='posts') }}">Inlägg</a> |
     <a href="{{ url_for('user_page', user_id=user.id, tab='comments')}}">Kommentar</a> |
     <a href="{{ url_for('user_page', user_id=user.id, tab='likes')}}">Gillade inlägg</a>
   </nav>
+
+  <h3>Följare</h3>
+  {% for user in followers %}
+    <a href="/user/{{ user.id }}">{{ user.username }}</a>
+  {% endfor %}
 </div>
 
 <div class="user_context">
@@ -61,8 +70,8 @@
   {% endif %}
 
 {% else %}
+<h3>Inlägg</h3>
   {% if posts %}
-  <h3>Inlägg</h3>
     {% for post in posts %}
     <div class="post">
       <div class="title">

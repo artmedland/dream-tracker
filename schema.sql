@@ -26,3 +26,9 @@ CREATE TABLE Likes (
     user_id INTEGER REFERENCES Users(id),
     UNIQUE(post_id, user_id)
 );
+
+CREATE TABLE Friends (
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER REFERENCES Users(id),
+    friend_id INTEGER REFERENCES Users(id)
+);

@@ -64,6 +64,35 @@ def has_liked(user_id, post_id):
         LIMIT 1
     """, [user_id, post_id])[0]["likes"] > 0
 
+def is_following(follower, target_user):
+    return db.query("""
+        SELECT COUNT(id) follows
+        FROM Friends
+        WHERE user_id = ?
+          AND friend_id = ?
+    """, [follower, target_user])[0]["follows"] > 0
+
+def get_followers(user_id):
+    query = """
+        SELECT u.id, u.username
+        FROM Friends f
+        JOIN Users u ON u.id = f.user_id
+        WHERE f.friend_id = ?"""
+    return db.query(query, [user_id])
+
+def follow(user_id, friend_id):
+    db.execute("""
+        INSERT INTO Friends (user_id, friend_id)
+        VALUES (?, ?)
+    """, [user_id, friend_id])
+
+def unfollow(user_id, friend_id):
+    db.execute("""
+        DELETE FROM Friends
+        WHERE user_id = ?
+          AND friend_id = ?
+    """, [user_id, friend_id])
+
 def register(username, password):
     """Creates a new user account with given username and password."""
     password_hash = generate_password_hash(password)
