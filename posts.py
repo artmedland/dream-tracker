@@ -33,10 +33,27 @@ def get(user_id=None):
     raise NotImplementedError
 
 def get_popular_posts():
-    raise NotImplementedError
+    query = """
+        SELECT p.id, p.title, p.dream dream,
+               u.username, u.id user_id,
+               COUNT(l.id) like_count
+        FROM Posts p
+        JOIN Users u ON p.poster_id = u.id
+        LEFT JOIN Likes l ON l.post_id = p.id
+        GROUP BY p.id
+        ORDER BY like_count DESC, p.id DESC"""
+    return db.query(query)
 
-def get_friend_posts():
-    raise NotImplementedError
+def get_friend_posts(user_id):
+    query = """
+        SELECT p.id, p.title, p.dream dream,
+               u.username, u.id user_id
+        FROM Posts p
+        JOIN Users u ON p.poster_id = u.id
+        JOIN Friends f ON f.friend_id = p.poster_id
+        WHERE f.user_id = ?
+        ORDER BY p.id DESC"""
+    return db.query(query, [user_id])
 
 def update(post_id, title, quality, dream):
     """Modifies a post's content."""

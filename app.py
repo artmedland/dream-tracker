@@ -54,9 +54,17 @@ def show_lines(content):
 @app.route("/")
 def index():
     n = config.MAX_PREVIEW_LENGTH
-    published = []
+    objs = []
 
-    for post in posts.get():
+    tab = request.args.get("t", "latest")
+    published = posts.get()
+    if tab == "friends" and logged_in():
+        user = session["user_id"]
+        published = posts.get_friend_posts(user)
+    elif tab == "popular":
+        published = posts.get_popular_posts()
+
+    for post in published:
         post = dict(post)
         dream = post["dream"] or ""
 
@@ -65,13 +73,13 @@ def index():
         else:
             post["preview"] = dream
 
-        published.append(post)
+        objs.append(post)
             
     return render_template(
         "index.html", 
         user_count=posts.user_count(),
         post_count=posts.post_count(),
-        posts=published)
+        posts=objs)
 
 @app.route("/user/<int:user_id>")
 def user_page(user_id):
