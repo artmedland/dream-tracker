@@ -5,7 +5,7 @@
 
 <div class="page"> <div class="page_context"></div>
 <h2>{{ post.title }}</h2> 
-av <a href="/user/{{ post.user_id }}">{{ post.username }}</a>
+av <a href="/user/{{ post.username }}">{{ post.username }}</a>
 
 <p><b>Sömnkvalitet</b>: {{ quality }}</p>
 <p>{{ post.dream | show_lines }}</p>
@@ -38,7 +38,7 @@ av <a href="/user/{{ post.user_id }}">{{ post.username }}</a>
   <ul class="comments">
   {% for comment in comments %}
     <li>
-      <b><a href="/user/{{ comment.user_id }}">
+      <b><a href="/user/{{ comment.username }}">
         {{ comment.username }}</a></b>: 
       {{ comment.content }}
     </li>

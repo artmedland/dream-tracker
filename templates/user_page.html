@@ -19,14 +19,14 @@
   </ul></div>
   
   <nav class="tabs">
-    <a href="{{ url_for('user_page', user_id=user.id, tab='posts') }}">Inlägg</a> |
-    <a href="{{ url_for('user_page', user_id=user.id, tab='comments')}}">Kommentar</a> |
-    <a href="{{ url_for('user_page', user_id=user.id, tab='likes')}}">Gillade inlägg</a>
+    <a href="/user/{{ user.username }}?tab=posts">Inlägg</a> |
+    <a href="/user/{{ user.username }}?tab=comments">Kommentar</a> |
+    <a href="/user/{{ user.username }}?tab=likes">Gillade inlägg</a>
   </nav>
 
   <h3>Följare</h3>
   {% for user in followers %}
-    <a href="/user/{{ user.id }}">{{ user.username }}</a>
+    <a href="/user/{{ user.username }}">{{ user.username }}</a>
   {% endfor %}
 </div>
 
@@ -55,7 +55,7 @@
       <div class="title">
         <a class="p_title" href="/post/{{ post.post_id }}">{{ post.title }}</a>
         <span class="p_poster">
-          av <a class="p_link" href="/user/{{ post.user_id }}">
+          av <a class="p_link" href="/user/{{ post.username }}">
             {{ post.username }}
           </a>
         </span>

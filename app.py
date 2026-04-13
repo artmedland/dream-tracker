@@ -81,9 +81,11 @@ def index():
         post_count=posts.post_count(),
         posts=objs)
 
-@app.route("/user/<int:user_id>")
-def user_page(user_id):
+@app.route("/user/<username>")
+def user_page(username):
+    user_id = users.get_id(username)
     user = users.get(user_id) or abort(404, "Ingen användare hittades.")
+        
     tab = request.args.get("tab", "posts")
     time = users.join_date(user_id, user["created_at"])
 

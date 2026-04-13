@@ -14,6 +14,12 @@ def get(user_id):
     user = db.query(query, [user_id])
     return user[0] if user else None
 
+def get_id(username):
+    """Retrieves the user id associated with a user by username."""
+    query = "SELECT id FROM Users WHERE username = ?"
+    user = db.query(query, [username])
+    return user[0]["id"] if user else None
+
 def join_date(user_id, time=""):
     """Gets or formats a given user's join date."""
     if not time:
