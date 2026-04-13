@@ -18,24 +18,6 @@ app = Flask(__name__)
 app.secret_key = config.get_session_key()
 db.update_schema()
 
-# pylint: disable=W0105
-'''Planned actions
-
-- Refactor code + write docs
-- Posts to front page (home + following feed)
-- Search bar to front page
-- Likes and comments
-- Follow users, subscribing to their feeds
-- Sort by New / Popular (number of likes) / Friends
-- Set post(s) as public, private or friends-only
-- User-defined (hash?)tags for posts
-- Wider user- and post-specific statistics
-- List collections, e.g. "Premonitions", "Nightmares", 
-    "Sleepover", "Memories" et cetera
-- Basic localizations (site language) + dark user interface
-- Clean stylesheets
-''' # pylint: enable=W0105
-
 def logged_in() -> bool:
     return "user_id" in session
 
