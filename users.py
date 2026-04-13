@@ -41,7 +41,7 @@ def get_comments(user_id):
     """Retrieves all comments published by the given user ID."""
     query = """
         SELECT p.id post_id, p.title post_title, 
-               c.content
+               c.content, c.id comment_id
         FROM Comments c
         JOIN Posts p ON c.post_id = p.id
         JOIN Users u ON c.user_id = u.id

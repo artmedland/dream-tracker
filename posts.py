@@ -102,7 +102,8 @@ def add_comment(post_id, user_id, content):
 
 def get_comments(post_id):
     return db.query("""
-        SELECT c.content, u.id user_id, u.username
+        SELECT c.content, c.id comment_id, 
+               u.id user_id, u.username
         FROM Comments c, Users u
         WHERE c.post_id = ? AND c.user_id = u.id
         ORDER BY c.id DESC

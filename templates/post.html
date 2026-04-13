@@ -37,7 +37,7 @@ av <a href="/user/{{ post.username }}">{{ post.username }}</a>
 {% if comments %}
   <ul class="comments">
   {% for comment in comments %}
-    <li>
+    <li id="{{ comment.comment_id }}">
       <b><a href="/user/{{ comment.username }}">
         {{ comment.username }}</a></b>: 
       {{ comment.content }}
