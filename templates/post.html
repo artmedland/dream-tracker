@@ -7,16 +7,34 @@
 <h2>{{ post.title }}</h2> 
 av <a href="/user/{{ post.username }}">{{ post.username }}</a>
 
-<p></p>
+<div class="post_data">
+
 {% if categories %}
-<div class="categories">
+<div class="item">
   {% for cat in categories %}
     <b>{{ cat.0 }}</b>: {{ cat.1 }}
   {% endfor %}
 </div>
 {% endif %}
 
-<b>Sömnkvalitet</b>: {{ quality }}
+<div class="item">
+  <b>Läggdags</b>: 
+  {{ data.bedtime }}
+</div>
+
+<div class="item">
+  <b>Fördröjning</b>:
+  {{ post.sleep_delay // 60 }}h 
+  {{ post.sleep_delay % 60 }}min  
+</div>
+
+<div class="item">
+  <b>Sömnkvalitet</b>: 
+  {{ data.sleep_quality }}
+</div>
+
+</div>
+
 <p>{{ post.dream | show_lines }}</p>
 
 <div class="info">

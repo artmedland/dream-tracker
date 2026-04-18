@@ -50,15 +50,6 @@
   {% endfor %}
 
   <p>
-    Nyckelord
-    <input type="text" name="tags">
-  </p>
-
-  <h3>NYI/DNT</h3>
-  The following features have not been implemented or tested fully.
-  They are subject to extreme changes in the near future.
-  
-  <p>
     Jag lade mig klockan
 
     <select name="bedtime-h">
@@ -88,7 +79,12 @@
       <option value="{{i}}">{{ "%02d" | format(i) }}</option>
       {% endfor %}
     </select> m
-    att få sömn
+    att få sömn.
+  </p>
+
+  <p>
+    Nyckelord
+    <input type="text" name="tags">
   </p>
   <p>
     

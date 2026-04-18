@@ -65,6 +65,55 @@
   {% endfor %}
   
   <p>
+    Jag lade mig klockan
+
+    <select name="bedtime-h">
+    {% for i in range(24) %}
+      {% if i == bedtime.0 %}
+        <option value="{{i}}" selected>{{ "%02d" | format(i) }}</option>
+      {% else %}
+        <option value="{{i}}">{{ "%02d" | format(i) }}</option>
+      {% endif %}
+    {% endfor %}
+    </select>
+    :
+    <select name="bedtime-m">
+      {% for i in range(60) %}
+        {% if i == bedtime.1 %}
+          <option value="{{i}}" selected>{{ "%02d" | format(i) }}</option>        
+        {% else %}
+          <option value="{{i}}">{{ "%02d" | format(i) }}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+  </p>
+
+  <p>
+    Det tog mig
+    
+    <select name="delay-h">
+    {% for i in range(13) %}
+      {% if i == post.sleep_delay // 60 %}
+      <option value="{{i}}" selected>{{ "%02d" | format(i) }}</option>
+      {% else %}
+      <option value="{{i}}">{{ "%02d" | format(i) }}</option>
+      {% endif %}
+    {% endfor %}
+    </select> h 
+    
+    <select name="delay-m">
+      {% for i in range(0, 60, 5) %}
+        {% if i == (post.sleep_delay % 60) %}
+          <option value="{{i}}" selected>{{ "%02d" | format(i) }}</option>
+        {% else %}
+          <option value="{{i}}">{{ "%02d" | format(i) }}</option>
+        {% endif %}
+      {% endfor %}
+    </select> m
+    att få sömn.
+  </p>
+
+  <p>
     Nyckelord
     <input type="text" name="tags" value="{{ tags }}">
   </p>

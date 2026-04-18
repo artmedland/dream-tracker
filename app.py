@@ -5,6 +5,7 @@ from flask import abort, request, redirect
 from werkzeug.exceptions import HTTPException
 from markupsafe import Markup, escape
 
+from datetime import datetime
 import sqlite3
 import re
 
@@ -112,7 +113,7 @@ def user_page(username):
 
     data = {
         "time": f"Användare sedan {time}",
-        "like_count": f"{like_count} likes",
+        "like_count": f"{like_count} likes"
     }
 
     return render_template(
@@ -187,13 +188,20 @@ def display_post(post_id):
     tags = posts.get_tags(post_id)
     categories = posts.classify(post_id)
 
+    bedtime = datetime.strptime(post["bedtime"], "%Y-%m-%dT%H:%M:%S")
+
+    data = {
+        "sleep_quality": quality,
+        "bedtime": bedtime.strftime("%H:%M")
+    }
+
     return render_template(
         "post.html", 
         post=post,
         comments=comments,
         is_liked=is_liked,
         likes=likes,
-        quality=quality,
+        data=data,
         tags=tags,
         categories=categories)
 
@@ -221,6 +229,7 @@ def publish():
     dream = request.form["dream"]
 
     visibility = request.form["visibility"]
+
     categories = []
     for c in request.form.getlist("categories"):
         if not c:
@@ -228,15 +237,19 @@ def publish():
         cat = c.split(":")
         categories.append((cat[0], cat[1]))
 
-    # bedtime_hour = request.form["bedtime-h"] or 0 
-    # bedtime_min = request.form["bedtime-m"] or 0
-    bedtime = "00:00"
+    time = datetime.now()
+    post_time = time.strftime("%Y-%m-%dT%H:%M:%S")
+
+    bedtime_hour = request.form["bedtime-h"] or 0 
+    bedtime_min = request.form["bedtime-m"] or 0
+    bedtime = f"{bedtime_hour}:{bedtime_min}"
+    bedtime = f"{time.strftime("%Y-%m-%d")}T{bedtime}:00"
 
     delay_hour = int(request.form["delay-h"]) or 0
     delay_min = int(request.form["delay-m"]) or 0
     delay = delay_hour * 60 + delay_min
 
-    # TODO - DRY
+    # TODO - recompose to separate function
     tags = set()
     for t in request.form["tags"].split(","):
         tags.add(t.strip())
@@ -248,8 +261,8 @@ def publish():
         abort(403, "Texten är för lång")
 
     posts.add(
-        user_id, title, quality, dream,
-        visibility, bedtime, delay
+        user_id, post_time, title, quality,
+        dream, visibility, bedtime, delay
         )
 
     post_id = db.last_insert_id()
@@ -310,10 +323,13 @@ def edit_post(post_id):
     categories = posts.get_categories()
 
     post_category = dict(posts.classify(post_id))
+    bedtime = datetime.strptime(post["bedtime"], "%Y-%m-%dT%H:%M:%S")
+    bedtime = (int(bedtime.hour), int(bedtime.minute))
 
     return render_template("edit_post.html", post=post,
         tags=tags,
         categories=categories,
+        bedtime=bedtime,
         post_category=post_category,
         title_max=config.MAX_TITLE_LENGTH,
         dream_max=config.MAX_DREAM_LENGTH)
@@ -329,6 +345,8 @@ def edit():
 
     if post["user_id"] != session["user_id"]:
         abort(403)
+
+    time = datetime.strptime(post["post_time"], "%Y-%m-%dT%H:%M:%S")
 
     title = request.form["title"]
     quality = request.form["sleep_quality"]
@@ -354,7 +372,17 @@ def edit():
         cat = c.split(":")
         categories.append((cat[0], cat[1]))
 
-    posts.update(post_id, title, quality, dream, visibility)
+    bedtime_hour = request.form["bedtime-h"] or 0 
+    bedtime_min = request.form["bedtime-m"] or 0
+    bedtime = f"{bedtime_hour}:{bedtime_min}"
+    bedtime = f"{time.strftime("%Y-%m-%d")}T{bedtime}:00"
+
+    delay_hour = int(request.form["delay-h"]) or 0
+    delay_min = int(request.form["delay-m"]) or 0
+    delay = delay_hour * 60 + delay_min
+
+    posts.update(post_id, title, quality, dream,
+        bedtime, delay, visibility)
     posts.update_categories(post_id, categories)
 
     posts.delete_tags(post_id)

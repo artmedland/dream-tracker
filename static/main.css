@@ -240,3 +240,7 @@ nav {
 .info {
     padding: 0.5em 0 0.5em 0;
 }
+
+.post_data .item {
+    padding: 0.3em 0 0 0;
+}

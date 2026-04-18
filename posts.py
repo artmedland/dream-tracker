@@ -10,20 +10,21 @@ def get_categories():
 
     return categories
 
-def add(user_id, title, quality, dream, 
+def add(user_id, post_time, title, quality, dream, 
         visibility, bedtime, delay):
     """Adds a post to the database."""
     db.execute("""
         INSERT INTO Posts (
-            user_id, title, sleep_quality, dream,
-            visibility, bedtime, sleep_delay
+            user_id, post_time, title, sleep_quality,
+            dream, visibility, bedtime, sleep_delay
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """, [
-        user_id, title, quality, dream, visibility,
-        bedtime, delay
+        user_id, post_time, title, quality, dream,
+        visibility, bedtime, delay
     ])
 
+# TODO - rename to post id, big oversight lol
 def get(user_id=None):
     """Gets a post from the database. 
     Omit the 'user_id' property to retrieve all available posts.
@@ -43,6 +44,8 @@ def get(user_id=None):
             SELECT u.id user_id, p.id post_id, 
                    p.title, u.username,
                    p.sleep_quality, p.dream,
+                   p.bedtime, p.sleep_delay,
+                   p.post_time,
                    p.visibility
             FROM Posts p, Users u
             WHERE p.user_id = u.id
@@ -76,16 +79,18 @@ def get_friend_posts(user_id):
         ORDER BY p.id DESC"""
     return db.query(query, [user_id])
 
-def update(post_id, title, quality, dream, visibility):
+def update(post_id, title, quality, dream, bedtime, delay, visibility):
     """Modifies a post's content."""
     db.execute("""
     UPDATE Posts
     SET title = ?,
         dream = ?,
         sleep_quality = ?,
+        bedtime = ?,
+        sleep_delay = ?,
         visibility = ?
     WHERE id = ?
-    """, [title, dream, quality, visibility, post_id])
+    """, [title, dream, quality, bedtime, delay, visibility, post_id])
 
 def delete(post_id):
     """Removes a post from the database."""

@@ -1,3 +1,5 @@
+"""Simple database manager."""
+
 from sqlite3 import Row, connect, OperationalError
 from flask import g
 
@@ -39,7 +41,7 @@ def update_schema():
             con.executescript(block)
         except OperationalError as ex:
             debug_message(ex, indent=4)
-    
+
 def initialize():
     con = get_connection()
     for block in open_sql("init.sql"):
@@ -52,7 +54,6 @@ def open_sql(filename):
     with open(filename, encoding="utf-8") as sql_file:
         sql = sql_file.read() + "\n"
         return sql.split("\n\n")
-
 
 def debug_message(message, indent=2):
     print(f"{' '*indent} > {message}")

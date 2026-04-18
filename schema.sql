@@ -8,6 +8,7 @@ CREATE TABLE Users (
 CREATE TABLE Posts (
     id INTEGER PRIMARY KEY,
     user_id INTEGER REFERENCES Users(id),
+    post_time DATETIME NOT NULL,
     title TEXT,
     sleep_quality INTEGER,
     dream TEXT,
