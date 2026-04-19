@@ -1,41 +1,45 @@
 {% extends "layout.html" %}
 
 {% block title %}Användare {{ user.username }}{% endblock %}
-{% block content %}
 
-<div class="page"> <div class="page_context">
+{% block content %}
+<div class="page">
   
 <div class="profile">
-
   <h2>Användare {{ user.username }}</h2>
-    <p><a href="/{{ 'un' if following else '' }}follow/{{ user.id }}">
-      {{ "Följ" if not following else "Sluta följa" }}
-    </a></p>
+    <p>
+      <a href="/{{ 'un' if following else '' }}follow/{{ user.id }}">
+        {{ "Följ" if not following else "Sluta följa" }}
+      </a>
+    </p>
 
+  <!--
   <div class="image">
-  <!-- nyi -->    
+    nyi    
   </div>
+  -->
 
   <div class="user_data">
     {% for d in data %}
-    <div class="data">
-      {{ data[d] }}
+      <div class="data">
+        {{ data[d] }}
     {% endfor %}
-    | {{ posts | count }} inlägg
-    |  {{ followers | count }} följare
-    </div>
+    
+        | {{ posts | count }} inlägg
+        |  {{ followers | count }} följare    
+      </div>
   </div>
   
   <nav class="tabs">
-    <a href="/user/{{ user.username }}?tab=posts">Inlägg</a> |
-    <a href="/user/{{ user.username }}?tab=comments">Kommentar</a> |
-    <a href="/user/{{ user.username }}?tab=likes">Gillade inlägg</a>
+    <a href="/user/{{ user.username }}?tab=posts">Inlägg</a>
+    | <a href="/user/{{ user.username }}?tab=comments">Kommentar</a>
+    | <a href="/user/{{ user.username }}?tab=likes">Gillade inlägg</a>
   </nav>
 
   <h3>Följare</h3>
-  {% for user in followers %}
-    <a href="/user/{{ user.username }}">{{ user.username }}</a>
-  {% endfor %}
+    {% for user in followers %}
+      <a href="/user/{{ user.username }}">{{ user.username }}</a>
+    {% endfor %}
 </div>
 
 <div class="user_context">

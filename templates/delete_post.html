@@ -1,23 +1,28 @@
 {% extends "layout.html" %}
 
 {% block title %}Radera inlägg{% endblock %}
-{% block content %}
 
-<div class="page"> <div class="page_context">
+{% block content %}
+<div class="page">
+
 <h2 class="context_header">
-  Radera inlägget <a class="title_link" 
-  href="/post/{{ post.post_id }}">{{ post.title }}</a>?
+  Radera inlägget 
+  <a class="title_link" href="/post/{{ post.post_id }}">
+    {{ post.title }}</a>?
 </h2>
+
 <p>
-  Är du säker att du vill radera ditt inlägg?<br>
+  Är du säker att du vill radera ditt inlägg? <br />
   Detta kan inte ångras senare.
 </p>
 
 <form action="/delete_post/{{ post.post_id }}" method="post">
   <input type="submit" name="delete" value="Radera" />
   <input type="submit" name="back" value="Ångra" />
-  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
-</form>
-</div> </div>
 
+  <input type="hidden" name="csrf_token" 
+  value="{{ session.csrf_token }}" />
+</form>
+
+</div>
 {% endblock %}

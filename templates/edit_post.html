@@ -1,11 +1,16 @@
 {% extends "layout.html" %}
 
 {% block title %}Redigera inlägg{% endblock %}
+
 {% block content %}
+<div class="page">
 
-<div class="page"> <div class="page_context">
+<h2>
+  Redigera <a class="title_link" href="/post/{{ post.post_id }}">
+    {{ post.title }}
+  </a>
+</h2>
 
-<h2>Redigera <a class="title_link" href="/post/{{ post.post_id }}">{{ post.title }}</a></h2>
 <form action="/edit" method="post">
   <p>
     Titel: <br />
@@ -29,17 +34,20 @@
   <p>
     Synlighet
     <select name="visibility">
-      <option value="public" {{ 
-        "selected" if post.visibility == "public" else ""}}
-        >Offentlig</option>
+      <option value="public" 
+        {{ "selected" if post.visibility == "public" else ""}}>
+          Offentlig
+        </option>
 
-      <option value="private" {{
-        "selected" if post.visibility == "private" else ""}}
-        >Privat</option>
+      <option value="private" 
+        {{ "selected" if post.visibility == "private" else ""}}>
+          Privat
+        </option>
 
-      <option value="friends-only" {{
-        "selected" if post.visibility == "friends-only" else ""}}
-      >Vänner</option>
+      <option value="friends-only" 
+        {{ "selected" if post.visibility == "friends-only" else ""}}>
+          Vänner
+        </option>
     </select>
   </p>
   
@@ -54,8 +62,7 @@
             {{ option }}
           </option>
         {% else %}
-          <option value="{{ category }}:{{ option }}"
-          >
+          <option value="{{ category }}:{{ option }}">
             {{ option }}
           </option>
         {% endif %}
@@ -70,9 +77,13 @@
     <select name="bedtime-h">
     {% for i in range(24) %}
       {% if i == bedtime.0 %}
-        <option value="{{i}}" selected>{{ "%02d" | format(i) }}</option>
+        <option value="{{i}}" selected>
+          {{ "%02d" | format(i) }}
+        </option>
       {% else %}
-        <option value="{{i}}">{{ "%02d" | format(i) }}</option>
+        <option value="{{i}}">
+          {{ "%02d" | format(i) }}
+        </option>
       {% endif %}
     {% endfor %}
     </select>
@@ -80,9 +91,13 @@
     <select name="bedtime-m">
       {% for i in range(60) %}
         {% if i == bedtime.1 %}
-          <option value="{{i}}" selected>{{ "%02d" | format(i) }}</option>        
+          <option value="{{i}}" selected>
+            {{ "%02d" | format(i) }}
+          </option>        
         {% else %}
-          <option value="{{i}}">{{ "%02d" | format(i) }}</option>
+          <option value="{{i}}">
+            {{ "%02d" | format(i) }}
+          </option>
         {% endif %}
       {% endfor %}
     </select>
@@ -94,9 +109,13 @@
     <select name="delay-h">
     {% for i in range(13) %}
       {% if i == post.sleep_delay // 60 %}
-      <option value="{{i}}" selected>{{ "%02d" | format(i) }}</option>
+        <option value="{{i}}" selected>
+          {{ "%02d" | format(i) }}
+        </option>
       {% else %}
-      <option value="{{i}}">{{ "%02d" | format(i) }}</option>
+        <option value="{{i}}">
+          {{ "%02d" | format(i) }}
+        </option>
       {% endif %}
     {% endfor %}
     </select> h 
@@ -104,9 +123,13 @@
     <select name="delay-m">
       {% for i in range(0, 60, 5) %}
         {% if i == (post.sleep_delay % 60) %}
-          <option value="{{i}}" selected>{{ "%02d" | format(i) }}</option>
+          <option value="{{i}}" selected>
+            {{ "%02d" | format(i) }}
+          </option>
         {% else %}
-          <option value="{{i}}">{{ "%02d" | format(i) }}</option>
+          <option value="{{i}}">
+            {{ "%02d" | format(i) }}
+          </option>
         {% endif %}
       {% endfor %}
     </select> m
@@ -119,10 +142,12 @@
   </p>
 
   <input type="hidden" name="post_id" value="{{ post.post_id }}" />
-  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+  
+  <input type="hidden" name="csrf_token"
+  value="{{ session.csrf_token }}" />
   
   <input type="submit" value="Uppdatera" />
 </form>
-</div> </div>
 
+</div>
 {% endblock %}

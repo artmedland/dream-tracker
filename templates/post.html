@@ -1,38 +1,41 @@
 {% extends "layout.html" %}
 
-{% block title %}{{ post.title }} av {{ post.username }}{% endblock %}
-{% block content %}
+{% block title %}
+  {{ post.title }} av {{ post.username }}
+{% endblock %}
 
-<div class="page"> <div class="page_context"></div>
+{% block content %}
+<div class="page">
+
 <h2>{{ post.title }}</h2> 
-av <a href="/user/{{ post.username }}">{{ post.username }}</a>
+av <a href="/user/{{ post.username }}">
+  {{ post.username }}
+</a>
 
 <div class="post_data">
+  {% if categories %}
+    <div class="item">
+      {% for cat in categories %}
+        <b>{{ cat.0 }}</b>: {{ cat.1 }}
+      {% endfor %}
+    </div>
+  {% endif %}
 
-{% if categories %}
-<div class="item">
-  {% for cat in categories %}
-    <b>{{ cat.0 }}</b>: {{ cat.1 }}
-  {% endfor %}
-</div>
-{% endif %}
+  <div class="item">
+    <b>Läggdags</b>: 
+    {{ data.bedtime }}
+  </div>
 
-<div class="item">
-  <b>Läggdags</b>: 
-  {{ data.bedtime }}
-</div>
+  <div class="item">
+    <b>Fördröjning</b>:
+    {{ post.sleep_delay // 60 }}h 
+    {{ post.sleep_delay % 60 }}min  
+  </div>
 
-<div class="item">
-  <b>Fördröjning</b>:
-  {{ post.sleep_delay // 60 }}h 
-  {{ post.sleep_delay % 60 }}min  
-</div>
-
-<div class="item">
-  <b>Sömnkvalitet</b>: 
-  {{ data.sleep_quality }}
-</div>
-
+  <div class="item">
+    <b>Sömnkvalitet</b>: 
+    {{ data.sleep_quality }}
+  </div>
 </div>
 
 <p>{{ post.dream | show_lines }}</p>
@@ -47,20 +50,23 @@ av <a href="/user/{{ post.username }}">{{ post.username }}</a>
   {% endif %}
 
   <div class="likes">
-  <form action="/like" method="post">
-    <input type="hidden" name="post_id" value="{{ post.post_id }}" />
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
-    <input type="submit" name="toggle_like" 
-      value="{{ '</3' if is_liked else '<3' }}" />
+    <form action="/like" method="post">
+      <input type="hidden" name="post_id" 
+        value="{{ post.post_id }}" />
+      <input type="hidden" name="csrf_token" 
+        value="{{ session.csrf_token }}" />
+    
+      <input type="submit" name="toggle_like" 
+        value="{{ '</3' if is_liked else '<3' }}" />
     {{ likes | count }} användare gillar detta
   </form> </div>
 </div>
 
 {% if session.user_id == post.user_id %}
-<div class="controls">
-  <a href="/edit_post/{{ post.post_id }}">Redigera</a>
-  <a href="/delete_post/{{ post.post_id }}">Radera</a>
-</div>
+  <div class="controls">
+    <a href="/edit_post/{{ post.post_id }}">Redigera</a>
+    <a href="/delete_post/{{ post.post_id }}">Radera</a>
+  </div>
 {% endif %}
 
 <h3>Kommentar</h3>
@@ -73,15 +79,19 @@ av <a href="/user/{{ post.username }}">{{ post.username }}</a>
 
 <form action="/comment" method="post">
   <textarea name="comment" rows="1" cols="45" maxlength="320"
-  placeholder="Kommentera något..." required></textarea> 
-  <br />
-  <input type="hidden" name="post_id" value="{{ post.post_id }}" />
-  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+  placeholder="Kommentera något..." required></textarea> <br />
+
+  <input type="hidden" name="post_id" 
+    value="{{ post.post_id }}" />
+  <input type="hidden" name="csrf_token" 
+    value="{{ session.csrf_token }}" />
+
   <input type="submit" name="submit" value="Publicera" />
 </form>
 
 {% if comments %}
-  <div class="comments">
+
+<div class="comments">
   {% for comment in comments %}
   <div class="comment">
     <div class="username">
@@ -94,13 +104,17 @@ av <a href="/user/{{ post.username }}">{{ post.username }}</a>
     </div>
   </div>
   {% endfor %}
-  </div>
+</div>
+
 {% else %}
+
 <p>
   Inga kommentar ännu...
 </p>
-{% endif %}
-<br /><a href="/">Tillbaka</a>
-</div> </div>
 
+{% endif %}
+
+<a href="/">Tillbaka</a>
+
+</div>
 {% endblock %}

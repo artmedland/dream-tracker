@@ -1,11 +1,10 @@
 {% extends "layout.html" %}
 
 {% block title %}Felsituation &mdash; {{ error.code }}{% endblock %}
+
 {% block content %}
+<div class="page">
 
-<div class="page"> <div class="page_context">
-
-<body>
 <div class="error">
   <p><b>Någonting gick fel.</b></p>
   <p>
@@ -15,9 +14,10 @@
     {{ error.description }}
   </p>
 </div>
+
 <div class="error_back">
   <a href="{{ prev }}">Tillbaka</a>
 </div>
-</body> </div> </div>
 
+</div>
 {% endblock %}

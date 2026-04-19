@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 
 {% block title %}Nytt inlägg{% endblock %}
-{% block content %}
 
-<div class="page"> <div class="page_context">
+{% block content %}
+<div class="page">
 
 <h2>Nytt inlägg</h2>
 
@@ -91,8 +91,9 @@
   </p>
 
   <input type="submit" value="Publicera" />
-  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+  <input type="hidden" name="csrf_token"
+  value="{{ session.csrf_token }}" />
 </form>
-</div> </div>
+</div>
 
 {% endblock %}

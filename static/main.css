@@ -1,255 +1,181 @@
 :root {
-    font-size: 28px;
+  font-size: 28px;
+
+  --bg: #232323FF;
+  --white: #FFFFFFFF;
+  --accent: #B9EBF2;
+  --gray: #373737FF;
+  --lgray: #FFFFFFc3;
 }
 
-input, select, textarea, button {
-    font: inherit;
-    font-size: 0.8rem;
-    padding: 0.2rem 0.4rem;
-    margin: auto;
-    line-height: 1.3;
-    border: 2px solid black;
-    border-radius: 4px;
-    box-sizing: border-box;
+input, select, 
+textarea, button {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 0.2rem 0.4rem;
+  border: 2px solid black;
+  border-radius: 4px;
+  background-color: var(--gray);
+  color: var(--white);
+  accent-color: var(--accent);
+  box-sizing: border-box;
 }
 
 html, body {
-    min-width: 700px;
+  min-width: 700px;
 }
 
 body {
-    font-family: sans-serif;
-    background-color: #232323FF;
-    color: #FFFFFFFF;
+  font-family: sans-serif;
+  background-color: var(--bg);
+  color: var(--white);
 }
 
 a {
-    color: #FFFFFFc3;
-    text-decoration: none;
+  color: var(--lgray);
+  text-decoration: none;
 }
 
 textarea {
-    min-width: 12em;
-    max-width: 36em;
-    min-height: 2em;
-    field-sizing: content;
-    background-color: #373737FF;
-    color: white;
+  field-sizing: content;
+  min-width: 12em;
+  max-width: 36em;
+  min-height: 2em;
 }
 
-input {
-    background-color: #373737FF;
-    color: white;
-    accent-color: #B9EBF2;
-}
-
-.nav {
-    align-items: center;
-    justify-content: center;
-    margin: auto;
-    text-align: center;
-}
-
-.index {
-    text-align: center;
+.nav, .index {
+  text-align: center;
 }
 
 .home_icon {
-    color: white;
-    text-decoration: none;
+  color: var(--white);
 }
 
 .page {
-    max-width: 700px;
-    text-align: left;
-    margin: auto;
+  max-width: 700px;
+  margin: auto;
+  text-align: left;
 }
 
-.page_context {
-    text-align: left;
-}
-
-.post_preview {
-    box-sizing: border-box;
-    border: 2px solid black;
-    padding: 1rem;
-    margin: 1rem auto;
-    background-color: #343434C2;
-    border-radius: 4px;
-    min-height: 1rem;
-    width: 28rem;
-    text-align: left;
-    align-items: center;
-    overflow: hidden;
-}
-
-.post_preview_padded {
-    box-sizing: border-box;
-    border: 2px solid black;
-    padding: 1rem;
-    margin: 1rem auto;
-    background-color: #343434C2;
-    border-radius: 4px;
-    min-height: 6rem;
-    width: 28rem;
-    text-align: left;
-    align-items: center;
-    overflow: hidden;
-}
-
-.post_title_padded {
-    padding: 0 0 1em 0;
-}
-
-.p_title {
-    text-decoration: none;
-    color: #ffffffff;
-    font-weight: bold;
-}
-
-.p_poster {
-    text-decoration: none;
-    color: #d5d5d587;
-    white-space: nowrap;
-}
-
-.p_link {
-    text-decoration: none;
-    color: #d5d5d587;
-}
-
-.error {
-    text-align: center;
-    margin: 3em auto;
-    max-width: 70%;
-}
-
-.title_link {
-    text-decoration: underline;
-}
-
-.error_back {
-    text-align: center;
-}
-
-.profile {
-
-}
-
-nav {
-    text-align: center;
-    padding: 1rem;
-}
-
-.profile .nav {
-    padding: 1em;
-}
-
+.card, .post-preview, .post,
 .user_context .comment {
-    padding: 1rem;
-    box-sizing: border-box;
-    border: 2px solid black;
-    margin: 1rem auto;
-    background-color: #343434C2;
-    border-radius: 4px;
-    min-height: 1rem;
-    max-width: 28rem;
-    text-align: left;
-    align-items: center;
-    overflow: hidden;
+  box-sizing: border-box;
+  border: 2px solid black;
+  padding: 1rem;
+  margin: 1rem auto;
+  background-color: var(--gray);
+  border-radius: 4px;
+  overflow: hidden;
 }
 
-.comment .title {
-    font-weight: bold;
+.card, .post-preview, 
+.user_context .comment {
+  width: 28rem;
+  text-align: left;
 }
 
-.comment .context {
-    color: #f5f5f5cc;
+.post-preview {
+  min-height: 1rem;
 }
 
-.post {
-    box-sizing: border-box;
-    border: 2px solid black;
-    padding: 1rem;
-    margin: 1rem auto;
-    background-color: #343434C2;
-    border-radius: 4px;
-    min-height: 1rem;
-    max-width: 28rem;
-    text-align: left;
-    align-items: center;
-    overflow: hidden;
+.post-preview.padded {
+  min-height: 6rem;
 }
 
-.post .content {
-    padding: 1em 0 0 0;
+.post-preview.padded 
+.post-title {
+  padding-bottom: 1em;
 }
 
-.post .title {
-    
+.post, .user_context .comment {
+  max-width: 28rem;
 }
 
-.tags {
-    color: gray;
+.post-title a, .p_title {
+  font-weight: bold;
+  color: white;
 }
 
-.info {
-    padding: 0;
-
-}
-
-.info .likes {
-    padding: 0.5rem 0 0 0;
-}
-
-.controls {
-    padding: 1rem 0 0 0;
-}
-
-.div {
-    padding: 1rem 0 0 0;
-}
-
-.comments {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin: 0 auto;
-}
-
-.comment {
-    display: grid;
-    grid-template-columns: 30% 70%;
-    column-gap: 0.5rem;
-    align-items: start;
-}
-
-.comment .username {
-    text-align: right;
-    font-weight: bold;
-    overflow: hidden;
-    text-overflow: clip;
-    white-space: nowrap;
-}
-
-.comment .content {
-    text-align: left;
-    word-wrap: break-word;
-}
-
-.info {
-    padding: 0.5em 0 0.5em 0;
-}
-
-.post_data .item {
-    padding: 0.3em 0 0 0;
-}
-
-.search .filter {
-    padding: 0.3em 0 0 0;
+.post-meta, .p_poster, .p_link {
+  color: #d5d5d587;
+  white-space: nowrap;
 }
 
 .like_count {
-    padding: auto;
-    color: darkgray;
+  color: darkgray;
+}
+
+.profile .user_data {
+  margin: 0.5em 0;
+}
+
+.tabs {
+  text-align: center;
+  padding: 1rem;
+}
+
+.user_context .comment .title {
+  font-weight: bold;
+}
+
+.user_context .comment .context {
+  color: #f5f5f5cc;
+}
+
+.comments {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.comment {
+  display: grid;
+  grid-template-columns: 30% 70%;
+  column-gap: 0.5rem;
+  align-items: start;
+}
+
+.comment .username {
+  text-align: right;
+  font-weight: bold;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.comment .content {
+  word-wrap: break-word;
+}
+
+.post_data .item, .search .filter {
+  padding-top: 0.3em;
+}
+
+.tags {
+  color: gray;
+}
+
+.info {
+  padding: 0.5em 0;
+}
+
+.likes {
+  padding-top: 0.5rem;
+}
+
+.controls {
+  padding-top: 1rem;
+}
+
+.error {
+  text-align: center;
+  margin: 3em auto;
+  max-width: 70%;
+}
+
+.title_link {
+  text-decoration: underline;
+}
+
+.error_back {
+  text-align: center;
 }

@@ -1,32 +1,35 @@
 {% extends "layout.html" %}
 
 {% block title %}Logga in{% endblock %}
-{% block content %}
 
-<div class="page"> <div class="page_context">
+{% block content %}
+<div class="page">
 
 {% if session.username %}
 <p>
   Du är redan inloggad!
 </p>
+
 <p>
   <a href="/">Tillbaka till framsidan</a>
   <a href="/logout">Logga ut</a>
 </p>
+
 {% else %}
 <form action="/login" method="post">
   <p>
     Användarnamn <br />
     <input type="text" name="username" required />
   </p>
+
   <p>
     Lösenord <br />
     <input type="password" name="password" required />
   </p>
+
   <input type="submit" value="Logga in" />
 </form>
 {% endif %}
 
-</div> </div>
-
+</div>
 {% endblock %}

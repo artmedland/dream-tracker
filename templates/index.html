@@ -1,102 +1,120 @@
 {% extends "layout.html" %}
 
 {% block title %}Sömnapp &mdash; Framsida{% endblock %}
-{% block content %}
 
+{% block content %}
 <div class="index">
-  {% if session.user_id %}
+
+{% if session.user_id %}
   <h3>
     Välkommen, {{ session.username }}. Sov du gott? <br />
   </h3>
-  {% else %}
+{% else %}
   <h3>
     Vad drömmer du om på natten?
   </h3>
-  {% endif %}
-  <p>
-    Det finns {{ user_count }} användare 
-    och {{ post_count }} inlägg. <br>
-  </p>
-  
-  <h3>Sök efter inlägg</h3>
-  <form action="/" method="get" class="search">
-    <input type="text" name="q" placeholder="Sök efter inlägg"
-    value="{{ request.args.get('q', '') }}">
+{% endif %}
 
-    <input type="hidden" name="t" value="{{ request.args.get('t', 'latest') }}">
-    <button type="submit">Sök</button>
+<p>
+  Det finns {{ user_count }} användare 
+  och {{ post_count }} inlägg.
+</p>
 
-    <div class="filter">
-      Sömnkvalitet 
+<h3>Sök efter inlägg</h3>
+
+<form action="/" method="get" class="search">
+  <input type="text" name="q" placeholder="Sök efter inlägg"
+  value="{{ request.args.get('q', '') }}">
+
+  <input type="hidden" name="t" 
+    value="{{ request.args.get('t', 'latest') }}">
+  <button type="submit">Sök</button>
+
+  <div class="filter">
+    Sömnkvalitet 
     <select name="by_quality">
       <option value="none" 
-      {% if request.args.get('by_quality') == 'none' %} selected {% endif %}
-      >(ingen skillnad)</option>
+      {% if request.args.get('by_quality') == 'none' %} 
+        selected 
+      {% endif %}>
+        (ingen skillnad)
+      </option>
 
-      {% set emoticons = [':C', ':(', ':/', ':)', ':D'] %}
-      {% for i in range(emoticons | length, 0, -1) %}
-        <option value="{{ i }}" 
-        {% if request.args.get('by_quality')|string == i|string %} selected {% endif %}
-        >{{ emoticons[i-1] }}</option>
-      {% endfor %}  
+    {% set emoticons = [':C', ':(', ':/', ':)', ':D'] %}
+
+    {% for i in range(emoticons | length, 0, -1) %}
+      <option value="{{ i }}" 
+        {% if request.args.get('by_quality')|string == i|string %} 
+          selected 
+        {% endif %}>
+          {{ emoticons[i-1] }}
+      </option>
+    {% endfor %}  
     </select>
-    </div>
+  </div>
 
-    <div class="filter">
-      <input type="text" name="tags" placeholder="nyckelord,"
-      value="{{ request.args.get('tags', '') }}">
-    </div>
+  <div class="filter">
+    <input type="text" name="tags" placeholder="sök med nyckelord"
+    value="{{ request.args.get('tags', '') }}">
+  </div>
 
-    {% for category, choices in categories.items() %}
-    <div class="filter">
-      <label for="{{ category }}">{{ category }}:</label>
-      <select name="{{ category }}" id="{{ category }}">
-        <option value="">(välj)</option>
+  {% for category, choices in categories.items() %}
+  <div class="filter">
+    <label for="{{ category }}">{{ category }}:</label>
+    <select name="{{ category }}" id="{{ category }}">
+      <option value="">(välj)</option>
         {% for choice in choices %}
-        <option value="{{ choice }}" 
-          {% if request.args.get(category) == choice %} 
-            selected 
-          {% endif %}>
-        {{ choice }}
-        </option>
+          <option value="{{ choice }}" 
+            {% if request.args.get(category) == choice %} 
+              selected 
+            {% endif %}>
+              {{ choice }}
+          </option>
         {% endfor %}
-      </select>
-    </div>
-    {% endfor %}
-  </form>
+    </select>
+  </div>
+  {% endfor %}
+</form>
 
-<p><nav class="tabs" name="filter">
+<p>
+  <nav class="tabs" name="filter">
     <a href="/?t=latest">Nyaste</a> |
     <a href="/?t=friends">Vänner</a> |
     <a href="/?t=popular">Populära</a>
   </nav>
 </p>
+
 </div>
 
 <div class="context">
 {% if posts %}
   {% for post in posts %}
-    <div class="post_preview{{ '_padded' if post.preview else '' }}">
-      <div class="post_title{{ '_padded' if post.preview else '' }}">
-        <a class="p_title" href="/post/{{ post.id }}">{{ post.title }}</a> 
-        <span class="p_poster"> 
+    <div class="post-preview{% if post.preview %} padded {% endif %}">
+      <div class="post-title">
+        <a class="p_title" href="/post/{{ post.id }}">
+          {{ post.title }}
+        </a> 
+        <span class="post-meta"> 
           av <a class="p_link" href="/user/{{ post.username }}">
-            {{ post.username }}</a>
+            {{ post.username }}
+          </a>
         </span>
+        
         <span class="like_count">
-          ({{ post.like_count }} ♡)
+          ({{ post.like_count }} &lt;3)
         </span>
       </div>
+      
       <div>
         {{ post.preview }}
       </div>
     </div>
   {% endfor %}
 {% else %}
-  <div class="post_preview">
+  <div class="post-preview">
     Inga inlägg.
   </div>
 {% endif %}
-</div>
 
+</div>
 {% endblock %}
