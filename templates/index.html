@@ -17,9 +17,53 @@
     Det finns {{ user_count }} användare 
     och {{ post_count }} inlägg. <br>
   </p>
-  <p>
-    <a href="/search">Sök efter inlägg</a>
-  </p>
+  
+  <h3>Sök efter inlägg</h3>
+  <form action="/" method="get" class="search">
+    <input type="text" name="q" placeholder="Sök efter inlägg"
+    value="{{ request.args.get('q', '') }}">
+
+    <input type="hidden" name="t" value="{{ request.args.get('t', 'latest') }}">
+    <button type="submit">Sök</button>
+
+    <div class="filter">
+      Sömnkvalitet 
+    <select name="by_quality">
+      <option value="none" 
+      {% if request.args.get('by_quality') == 'none' %} selected {% endif %}
+      >(ingen skillnad)</option>
+
+      {% set emoticons = [':C', ':(', ':/', ':)', ':D'] %}
+      {% for i in range(emoticons | length, 0, -1) %}
+        <option value="{{ i }}" 
+        {% if request.args.get('by_quality')|string == i|string %} selected {% endif %}
+        >{{ emoticons[i-1] }}</option>
+      {% endfor %}  
+    </select>
+    </div>
+
+    <div class="filter">
+      <input type="text" name="tags" placeholder="nyckelord,"
+      value="{{ request.args.get('tags', '') }}">
+    </div>
+
+    {% for category, choices in categories.items() %}
+    <div class="filter">
+      <label for="{{ category }}">{{ category }}:</label>
+      <select name="{{ category }}" id="{{ category }}">
+        <option value="">(välj)</option>
+        {% for choice in choices %}
+        <option value="{{ choice }}" 
+          {% if request.args.get(category) == choice %} 
+            selected 
+          {% endif %}>
+        {{ choice }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endfor %}
+  </form>
 
 <p><nav class="tabs" name="filter">
     <a href="/?t=latest">Nyaste</a> |

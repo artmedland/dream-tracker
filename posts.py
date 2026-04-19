@@ -24,6 +24,92 @@ def add(user_id, post_time, title, quality, dream,
         visibility, bedtime, delay
     ])
 
+def get_posts(user_id=None, tab="latest", q=None, 
+             sleep_quality=None, tags=None, cats=None):
+    sql = """
+        SELECT p.id, p.title, p.dream, p.sleep_quality,
+               p.bedtime, p.sleep_delay,
+               p.visibility, p.user_id, u.username,
+               COUNT(l.id) like_count
+        FROM Posts p
+        INNER JOIN Users u ON p.user_id = u.id
+        LEFT JOIN Likes l ON l.post_id = p.id 
+    """
+
+    conditions = []
+    args = []
+
+    vis = ["p.visibility = 'public'"]
+
+    if user_id is not None:
+        vis.append("p.visibility = 'public'")
+        vis.append(
+            "(p.visibility = 'private' AND p.user_id = ?)"
+            )
+        args.append(user_id)
+
+        vis.append("""
+            (p.visibility = 'friends-only' AND EXISTS (
+                SELECT 1 FROM Friends f
+                WHERE f.user_id = p.user_id AND f.friend_id = ?
+            ))
+        """)
+        args.append(user_id)
+    
+    conditions = ["(" + " OR ".join(vis) + ")"]
+
+    if tab == "friends" and user_id is not None:
+        conditions.append("""
+            EXISTS (
+                SELECT 1 FROM Friends f
+                WHERE f.user_id = ? AND f.friend_id = p.user_id
+            )
+        """)
+        args.append(user_id)
+    
+    if q:
+        ex = f"%{q}%"
+        conditions.append("(p.title LIKE ? OR p.dream LIKE ?)")
+        args.extend([ex, ex])
+    
+    if sleep_quality is not None:
+        conditions.append("p.sleep_quality = ?")
+        args.append(sleep_quality)
+
+    if tags:
+        for t in tags:
+            conditions.append("""
+                EXISTS (
+                    SELECT 1 FROM Tags t
+                    WHERE t.post_id = p.id
+                      AND t.tag = ?
+                )""")
+            args.append(t)
+
+    if cats:
+        for title, option in cats.items():
+            conditions.append("""
+                EXISTS (
+                    SELECT 1 FROM PostCategories pc
+                    WHERE pc.post_id = p.id
+                      AND pc.category = ?
+                      AND pc.choice = ?
+            )""")
+            args.extend([title, option])
+
+    where = "WHERE " + " AND ".join(conditions) if conditions else ""
+    group = """GROUP BY p.id, p.title, p.dream, p.sleep_quality,
+                        p.bedtime, p.sleep_delay, p.visibility,
+                        p.user_id, u.username"""
+    
+    if tab == "popular":
+        order = "ORDER BY like_count DESC, p.id DESC"
+    else:
+        order = "ORDER BY p.id DESC"
+    
+    query = f"{sql} {where} {group} {order}"
+    return db.query(query, args)
+
 # TODO - rename to post id, big oversight lol
 def get(user_id=None):
     """Gets a post from the database. 
@@ -101,6 +187,7 @@ def delete(post_id):
     db.execute("DELETE FROM Posts WHERE id = ?", [post_id])
 
 # TODO better filter handling
+# deprecated
 def find(query, quality=""):
     """Finds a post whose title or content contains the given query."""
     ex = f"%{query}%"
@@ -122,6 +209,28 @@ def find(query, quality=""):
            OR dream LIKE ?
         ORDER BY id DESC
     """, [ex, ex])
+
+def find(filters):
+    query = """
+        SELECT DISTINCT id, title, dream, sleep_quality, 
+                        user_id, visibility
+        FROM Posts
+    """
+    where = []
+    params = []
+
+    if filters["q"]:
+        ex = f"%{filters['q']}%"
+        where.append("(p.title LIKE ? OR p.dream LIKE ?)")
+        params.extend([ex, ex])
+
+    quality = filters["quality"]
+    if quality is not None:
+        where.append("p.sleep_quality = ?")
+        params.append(quality)
+    
+    q = query + " WHERE " + " AND ".join(where) if where else query
+    q += " ORDER BY p.id DESC"
 
 def classify(post_id):
     return db.query("""

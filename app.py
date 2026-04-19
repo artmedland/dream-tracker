@@ -45,50 +45,62 @@ def show_lines(content):
 @app.route("/")
 def index():
     n = config.MAX_PREVIEW_LENGTH
-    objs = []
 
     tab = request.args.get("t", "latest")
-    published = posts.get()
-    user_id = None
+    query = request.args.get("q", "").strip() or None
 
-    if logged_in():
-        user_id = session["user_id"]
+    quality_filter = request.args.get("by_quality", "none")
+    if quality_filter == "none":
+        quality_filter = None
+    else:
+        try:
+            quality_filter = int(quality_filter)
+        except ValueError:
+            quality_filter = None
+    
+    tags = request.args.get("tags", "").strip()
+    if tags:
+        tags = [t.strip() for t in tags.split(",") if t.strip()]
+    else:
+        tags = None
 
-    if tab == "friends" and logged_in():
-        published = posts.get_friend_posts(user_id)
-    elif tab == "popular":
-        published = posts.get_popular_posts()
+    categories = posts.get_categories()
+    cats = {}
+    for cat in categories.keys():
+        choice = request.args.get(cat)
+        if choice:
+            cats[cat] = choice
 
-    for post in published:
+    user_id = session["user_id"] if logged_in() else None
+
+    post_list = posts.get_posts(
+        user_id=user_id,
+        tab=tab,
+        q=query,
+        sleep_quality=quality_filter,
+        tags=tags,
+        cats=cats
+    )
+
+    retrieved = []
+    for post in post_list:
         post = dict(post)
-        dream = post["dream"] or ""
 
-        if len(dream) > config.MAX_PREVIEW_LENGTH:
-            post["preview"] = f"{dream[:n]}..."
+        body = post["dream"] or ""
+
+        if len(body) > config.MAX_PREVIEW_LENGTH:
+            post["preview"] = f"{body[:n]}..."
         else:
-            post["preview"] = dream
+            post["preview"] = body
 
-        visibility = post["visibility"]
-        poster_id = post["user_id"]
-
-        is_poster = is_friend = False
-
-        if logged_in():
-            is_poster = user_id == poster_id
-            is_friend = users.is_following(poster_id, user_id)
-
-        if visibility == "private" and not is_poster:
-            continue
-        if visibility == "friends-only" and not (is_poster or is_friend):
-            continue
-
-        objs.append(post)
+        retrieved.append(post)
 
     return render_template(
         "index.html", 
         user_count=posts.user_count(),
         post_count=posts.post_count(),
-        posts=objs)
+        posts=retrieved,
+        categories=categories)
 
 @app.route("/user/<username>")
 def user_page(username):
@@ -210,10 +222,8 @@ def new_post():
     if not logged_in():
         abort(401, "Du måste vara inloggad.")
 
-    categories = posts.get_categories()
-
     return render_template("draft.html",
-        categories=categories,
+        categories=posts.get_categories(),
         title_max=config.MAX_TITLE_LENGTH,
         dream_max=config.MAX_DREAM_LENGTH)
 
