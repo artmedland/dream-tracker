@@ -105,7 +105,7 @@ def index():
 @app.route("/user/<username>")
 def user_page(username):
     user_id = users.get_id(username)
-    user = users.get(user_id) or abort(404, "Ingen användare hittades.")
+    user = users.get(user_id) or abort(404, config.ERRORS["nouser"])
 
     tab = request.args.get("tab", "posts")
     time = users.join_date(user_id, user["created_at"])
@@ -153,7 +153,7 @@ def unfollow(user_id):
 
 def toggle_follow(user_id, toggle):
     if not logged_in():
-        abort(403, "Du måste vara inloggad.")
+        abort(403, config.ERRORS["login"])
 
     session_id = session["user_id"]
     if toggle:
@@ -164,21 +164,15 @@ def toggle_follow(user_id, toggle):
 
 @app.route("/post/<int:post_id>")
 def display_post(post_id):
-    post = posts.get(post_id) or abort(404, "Inlägget hittades inte.")
+    post = posts.get(post_id) or abort(404, config.ERRORS["nopost"])
     visibility = post["visibility"]
     poster_id = post["user_id"]
 
     user_id = None
 
-    # TODO - stronger typing, like enum
-    # if visibility == "private" and :
-    #     abort(403, "Inlägget är inte tillgängligt.")
+    is_liked = is_friend = is_poster = False
 
-    is_liked = False
-    is_friend = False
-    is_poster = False
-
-    # TODO - recompose to separate function
+    # TODO - recompose
     if logged_in():
         user_id = session["user_id"]
         is_liked = users.has_liked(user_id, post_id)
@@ -186,13 +180,13 @@ def display_post(post_id):
         is_friend = users.is_following(poster_id, user_id) or is_poster
 
     if visibility != "public" and user_id is None:
-        abort(403, "Du måste vara inloggad.")
+        abort(403, config.ERRORS["login"])
 
     if visibility == "private" and not is_poster:
-        abort(403, "Inlägget är inte tillgängligt.")
+        abort(403, config.ERRORS["unavail"])
 
     if visibility == "friends-only" and not is_friend:
-        abort(403, "Inlägget är inte tillgängligt.")
+        abort(403, config.ERRORS["unavail"])
 
     comments = posts.get_comments(post_id)
     likes = posts.get_likes(post_id)
@@ -220,7 +214,7 @@ def display_post(post_id):
 @app.route("/draft")
 def new_post():
     if not logged_in():
-        abort(401, "Du måste vara inloggad.")
+        abort(401, config.ERRORS["login"])
 
     return render_template("draft.html",
         categories=posts.get_categories(),
@@ -231,7 +225,7 @@ def new_post():
 def publish():
     check_csrf()
     if not logged_in():
-        abort(401, "Du måste vara inloggad.")
+        abort(401, config.ERRORS["login"])
 
     user_id = session["user_id"]
     title = request.form["title"]
@@ -266,9 +260,9 @@ def publish():
     tags = list(tags)
 
     if len(title) < 1 or len(title) > config.MAX_TITLE_LENGTH:
-        abort(403, "Titeln har fel längd")
+        abort(403, config.ERRORS["lentitle"])
     if len(dream) > config.MAX_DREAM_LENGTH:
-        abort(403, "Texten är för lång")
+        abort(403, config.ERRORS["lenbody"])
 
     posts.add(
         user_id, post_time, title, quality,
@@ -286,18 +280,18 @@ def publish():
 def like():
     check_csrf()
     if not logged_in():
-        abort(401, "Du måste vara inloggad.")
+        abort(401, config.ERRORS["login"])
 
     post_id = request.form["post_id"]
     user_id = session["user_id"]
-    post = posts.get(post_id) or abort(404, "Inlägget hittades inte.")
+    post = posts.get(post_id) or abort(404, config.ERRORS["nopost"])
 
     try:
         state = not users.has_liked(user_id, post_id)
         posts.like(post_id, user_id, state=state)
     except sqlite3.IntegrityError as ex:
         print(ex)
-        abort(500, "Inlägget har redan gillats.")
+        abort(500, config.ERRORS["liked"])
 
     return redirect(f"/post/{post_id}")
 
@@ -305,11 +299,11 @@ def like():
 def comment():
     check_csrf()
     if not logged_in():
-        abort(401, "Du måste vara inloggad.")
+        abort(401, config.ERRORS["login"])
 
     comment = request.form["comment"]
     if len(comment) < 1 or len(comment) > 320:
-        abort(403, "Kommentarens längd är fel.")
+        abort(403, config.ERRORS["lencomm"])
 
     user_id = session["user_id"]
     post_id = request.form["post_id"]
@@ -321,9 +315,9 @@ def comment():
 @app.route("/edit_post/<int:post_id>")
 def edit_post(post_id):
     if not logged_in():
-        abort(401, "Du måste vara inloggad.")
+        abort(401, config.ERRORS["login"])
 
-    post = posts.get(post_id) or abort(404, "Inlägget hittades inte.")
+    post = posts.get(post_id) or abort(404, config.ERRORS["nopost"])
 
     if post["user_id"] != session["user_id"]:
         abort(403)
@@ -348,7 +342,7 @@ def edit_post(post_id):
 def edit():
     check_csrf()
     if not logged_in():
-        abort(401, "Du måste vara inloggad.")
+        abort(401, config.ERRORS["login"])
 
     post_id = request.form["post_id"]
     post = posts.get(int(post_id)) or abort(404)
@@ -371,9 +365,9 @@ def edit():
     tags = list(tags)
 
     if len(title) < 1 or len(title) > config.MAX_TITLE_LENGTH:
-        abort(403, "Titelns längd är fel.")
+        abort(403, config.ERRORS["lentitle"])
     if len(dream) > config.MAX_DREAM_LENGTH:
-        abort(403, "Texten är för lång.")
+        abort(403, config.ERRORS["lenbody"])
 
     categories = []
     for c in request.form.getlist("categories"):
@@ -403,7 +397,7 @@ def edit():
 @app.route("/delete_post/<int:post_id>", methods=["GET", "POST"])
 def delete_post(post_id):
     if not logged_in():
-        abort(401, "Du måste vara inloggad.")
+        abort(401, config.ERRORS["login"])
 
     post = posts.get(post_id) or abort(404, "Inlägget hittades inte.")
     if post["user_id"] != session["user_id"]:
@@ -447,23 +441,22 @@ def create_user():
     password2 = request.form["password2"]
 
     if len(username) > config.MAX_USERNAME_LENGTH:
-        abort(403, "Användarnamnet är för långt.")
+        abort(403, config.ERRORS["lenuser"])
 
     regex = config.USERNAME_RESTRICTION
     if not re.fullmatch(regex, username) or len(username) < 1:
-        abort(403, ("FEL: Användarnamnet får inte innehålla"
-                    " specialtecken eller mellanslag"))
+        abort(403, config.ERRORS["userspec"])
 
     if password1 != password2:
-        abort(403, "FEL: Lösenord stämmer inte överens")
+        abort(403, config.ERRORS["mismatchpw"])
 
     if len(password1) < config.MIN_PASSWORD_LENGTH:
-        abort(403, "FEL: Lösenordet är för kort")
+        abort(403, config.ERRORS["lenpw"])
 
     try:
         user_id = users.register(username, password1)
     except sqlite3.IntegrityError:
-        abort(403, "FEL: Användarnamnet kan inte användas")
+        abort(403, config.ERRORS["userunavail"])
 
     session["user_id"] = user_id
     session["username"] = username
@@ -480,7 +473,7 @@ def login():
 
     result = users.login(username, password)
     if not result:
-        abort(403, "Användarnamnet hittades ej.")
+        abort(403, config.ERRORS["nouser"])
 
     user_id = result["id"]
     password_hash = result["password_hash"]
@@ -491,7 +484,7 @@ def login():
         session["csrf_token"] = config.csrf_token()
         return redirect("/")
 
-    abort(404, "FEL: Fel användarnamn eller lösenord")
+    abort(404, config.ERRORS["auth"])
 
 @app.route("/logout")
 def logout():

@@ -10,6 +10,24 @@ USERNAME_RESTRICTION = "[a-zA-Z0-9]+"
 MIN_PASSWORD_LENGTH = 1
 MAX_PREVIEW_LENGTH = 165
 
+ERRORS = {
+    "login": "Du måste vara inloggad.",
+    "auth": "Fel användarnamn eller lösenord.",
+    "nouser": "Användarnamnet hittades ej.",
+    "userunavail": "Användarnamnet kan inte användas.",
+    "mispatchpw": "Lösenorden stämmer inte överens.",
+    "lenpw": "Lösenordet är för kort.",
+    "userspec": ("Användarnamnet får inte innehålla"
+                " specialtecken eller mellanslag."),
+    "lenuser": "Användarnamnet är för långt.",
+    "lenbody": "Texten är för lång.",
+    "lentitle": "Titeln har fel längd.",
+    "nopost": "Inlägget hittades inte.",
+    "lencomm": "Kommentarets längd är fel.",
+    "liked": "Inlägget har redan gillats!",
+    "unavail": "Inlägget är inte tillgängligt.",
+}
+
 WORKING_DIR = Path(__file__).parent
 CONFIG_PATH = WORKING_DIR / "config"
 KEY_PATH = CONFIG_PATH / ".secret_key"
