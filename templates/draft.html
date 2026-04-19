@@ -59,7 +59,7 @@
     </select>
     :
     <select name="bedtime-m">
-      {% for i in range(60) %}
+      {% for i in range(0, 60, 5) %}
       <option value="{{i}}">{{ "%02d" | format(i) }}</option>
       {% endfor %}
     </select>
