@@ -42,10 +42,7 @@ def get_posts(user_id=None, tab="latest", q=None,
     vis = ["p.visibility = 'public'"]
 
     if user_id is not None:
-        vis.append("p.visibility = 'public'")
-        vis.append(
-            "(p.visibility = 'private' AND p.user_id = ?)"
-            )
+        vis.append("(p.visibility = 'private' AND p.user_id = ?)")
         args.append(user_id)
 
         vis.append("""
@@ -110,60 +107,20 @@ def get_posts(user_id=None, tab="latest", q=None,
     query = f"{sql} {where} {group} {order}"
     return db.query(query, args)
 
-# TODO - rename to post id, big oversight lol
-def get(user_id=None):
-    """Gets a post from the database. 
-    Omit the 'user_id' property to retrieve all available posts.
-    """
-    if user_id is None:
-        query = """
-            SELECT p.id, p.title, p.dream dream,
-                   p.visibility,
-                   u.username, u.id user_id
-            FROM Posts p, Users u
-            WHERE p.user_id = u.id
-            ORDER BY p.id DESC"""
-        return db.query(query)
-    if isinstance(user_id, (int, str)):
-        # TODO better type safety
-        query = """
-            SELECT u.id user_id, p.id post_id, 
-                   p.title, u.username,
-                   p.sleep_quality, p.dream,
-                   p.bedtime, p.sleep_delay,
-                   p.post_time,
-                   p.visibility
-            FROM Posts p, Users u
-            WHERE p.user_id = u.id
-              AND p.id = ?"""
-        post = db.query(query, [user_id])
-        return post[0] if post else None
-    raise NotImplementedError
-
-def get_popular_posts():
+def get(post_id):
+    """Gets a post from the database by id."""
     query = """
-        SELECT p.id, p.title, p.dream dream,
-               p.visibility,
-               u.username, u.id user_id,
-               COUNT(l.id) like_count
-        FROM Posts p
-        JOIN Users u ON p.user_id = u.id
-        LEFT JOIN Likes l ON l.post_id = p.id
-        GROUP BY p.id
-        ORDER BY like_count DESC, p.id DESC"""
-    return db.query(query)
-
-def get_friend_posts(user_id):
-    query = """
-        SELECT p.id, p.title, p.dream dream,
-               p.visibility,
-               u.username, u.id user_id
-        FROM Posts p
-        JOIN Users u ON p.user_id = u.id
-        JOIN Friends f ON f.friend_id = p.user_id
-        WHERE f.user_id = ?
-        ORDER BY p.id DESC"""
-    return db.query(query, [user_id])
+        SELECT u.id user_id, p.id post_id, 
+                p.title, u.username,
+                p.sleep_quality, p.dream,
+                p.bedtime, p.sleep_delay,
+                p.post_time,
+                p.visibility
+        FROM Posts p, Users u
+        WHERE p.user_id = u.id
+            AND p.id = ?"""
+    post = db.query(query, [post_id])
+    return post[0] if post else None
 
 def update(post_id, title, quality, dream, bedtime, delay, visibility):
     """Modifies a post's content."""
@@ -186,56 +143,17 @@ def delete(post_id):
     db.execute("DELETE FROM Comments WHERE post_id = ?", [post_id])
     db.execute("DELETE FROM Posts WHERE id = ?", [post_id])
 
-# TODO better filter handling
-# deprecated
-def find(query, quality=""):
-    """Finds a post whose title or content contains the given query."""
-    ex = f"%{query}%"
-
-    if quality != "":
-        return db.query("""
-            SELECT id, title
-            FROM Posts
-            WHERE sleep_quality = ?
-              AND (title LIKE ? 
-               OR dream LIKE ?)
-            ORDER BY id DESC
-        """, [quality, ex, ex])
-
-    return db.query("""
-        SELECT id, title
-        FROM Posts
-        WHERE title LIKE ?
-           OR dream LIKE ?
-        ORDER BY id DESC
-    """, [ex, ex])
-
-def find(filters):
-    query = """
-        SELECT DISTINCT id, title, dream, sleep_quality, 
-                        user_id, visibility
-        FROM Posts
-    """
-    where = []
-    params = []
-
-    if filters["q"]:
-        ex = f"%{filters['q']}%"
-        where.append("(p.title LIKE ? OR p.dream LIKE ?)")
-        params.extend([ex, ex])
-
-    quality = filters["quality"]
-    if quality is not None:
-        where.append("p.sleep_quality = ?")
-        params.append(quality)
-    
-    q = query + " WHERE " + " AND ".join(where) if where else query
-    q += " ORDER BY p.id DESC"
-
-def classify(post_id):
-    return db.query("""
+def categorize_post(post_id):
+    query = db.query("""
         SELECT category, choice FROM PostCategories WHERE post_id = ?
     """, [post_id])
+    return [(q["category"], q["choice"]) for q in query]
+
+def categorize_dict(post_id):
+    query = db.query("""
+        SELECT category, choice FROM PostCategories WHERE post_id = ?
+    """, [post_id])
+    return {q["category"]: q["choice"] for q in query}
 
 def update_categories(post_id, categories):
     db.execute("DELETE FROM PostCategories WHERE post_id = ?", [post_id])
@@ -260,6 +178,12 @@ def delete_tags(post_id):
 
 def get_tags(post_id):
     return db.query("SELECT tag FROM Tags WHERE post_id = ?", [post_id])
+
+def parse_tags(tags):
+    if not tags:
+        return None
+    tags = {t.strip() for t in tags.split(",") if t.strip()}
+    return list(tags)
 
 def add_comment(post_id, user_id, content):
     db.execute("""

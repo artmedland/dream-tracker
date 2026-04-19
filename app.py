@@ -58,11 +58,7 @@ def index():
         except ValueError:
             quality_filter = None
     
-    tags = request.args.get("tags", "").strip()
-    if tags:
-        tags = [t.strip() for t in tags.split(",") if t.strip()]
-    else:
-        tags = None
+    tags = posts.parse_tags(request.args.get("tags", "").strip())
 
     categories = posts.get_categories()
     cats = {}
@@ -121,7 +117,7 @@ def user_page(username):
             target_user=user_id)
 
     followers = users.get_followers(user_id)
-    like_count = users.get_like_count(user_id)["likes"] 
+    like_count = users.get_like_count(user_id) 
 
     data = {
         "time": f"Användare sedan {time}",
@@ -141,30 +137,23 @@ def user_page(username):
 
 @app.route("/follow/<int:user_id>", methods=["POST"])
 def follow(user_id):
-    toggle_follow(user_id, True)
-    username = users.get(user_id)["username"]
-    return redirect(f"/user/{username}")
     check_csrf()
     if not logged_in():
         abort(403, config.ERRORS["login"])
 
-def unfollow(user_id):
-    toggle_follow(user_id, False)
+    users.follow(session["user_id"], user_id)
     username = users.get(user_id)["username"]
     return redirect(f"/user/{username}")
 
-def toggle_follow(user_id, toggle):
+@app.route("/unfollow/<int:user_id>", methods=["POST"])
 def unfollow(user_id):
     check_csrf()
     if not logged_in():
         abort(403, config.ERRORS["login"])
 
-    session_id = session["user_id"]
-    if toggle:
-        users.follow(session_id, user_id)
-    else:
-        users.unfollow(session_id, user_id)
-
+    users.unfollow(session["user_id"], user_id)
+    username = users.get(user_id)["username"]
+    return redirect(f"/user/{username}")
 
 @app.route("/post/<int:post_id>")
 def display_post(post_id):
@@ -196,7 +185,7 @@ def display_post(post_id):
     likes = posts.get_likes(post_id)
     quality = ezformat.to_emoticon(post["sleep_quality"])
     tags = posts.get_tags(post_id)
-    categories = posts.classify(post_id)
+    categories = posts.categorize_dict(post_id)
 
     bedtime = datetime.strptime(post["bedtime"], "%Y-%m-%dT%H:%M:%S")
 
@@ -257,11 +246,8 @@ def publish():
     delay_min = int(request.form["delay-m"]) or 0
     delay = delay_hour * 60 + delay_min
 
-    # TODO - recompose to separate function
-    tags = set()
-    for t in request.form["tags"].split(","):
-        tags.add(t.strip())
-    tags = list(tags)
+    t = request.form["tags"] or ""
+    tags = posts.parse_tags(t)
 
     if len(title) < 1 or len(title) > config.MAX_TITLE_LENGTH:
         abort(403, config.ERRORS["lentitle"])
@@ -330,7 +316,7 @@ def edit_post(post_id):
     tags = ", ".join(tags)
     categories = posts.get_categories()
 
-    post_category = dict(posts.classify(post_id))
+    post_category = dict(posts.categorize_post(post_id))
     bedtime = datetime.strptime(post["bedtime"], "%Y-%m-%dT%H:%M:%S")
     bedtime = (int(bedtime.hour), int(bedtime.minute))
 
@@ -416,23 +402,6 @@ def delete_post(post_id):
         return redirect("/")
 
     return redirect(f"/post/{post_id}")
-
-@app.route("/search")
-def search():
-    quality_filter = request.args.get("by_quality")
-    if quality_filter == "none":
-        quality_filter = ""
-
-    query = request.args.get("q") or ""
-    if query or quality_filter:
-        results = posts.find(query, quality_filter)
-    else:
-        results = []
-
-    return render_template("search.html",
-        q=query,
-        filter=quality_filter,
-        results=results)
 
 @app.route("/register")
 def register():
