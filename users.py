@@ -28,14 +28,31 @@ def join_date(user_id, time=""):
     time = datetime.strptime(time, "%Y-%m-%d %H:%M:%S.%f")
     return time.strftime("%d/%m/%Y")
 
-def posts(user_id):
-    """Retrieves all posts published by a user with the given uid."""
-    query = """
-        SELECT id, title, dream
-        FROM Posts
-        WHERE user_id = ?
-        ORDER BY id DESC"""
-    return db.query(query, [user_id])
+def posts(user_id, viewer_id=None):
+    """Retrieves all posts published by a user with the given id.
+        Param viewer_id is used to check access.
+    """
+    conditions = ["p.user_id = ?"]
+    args = [user_id]
+
+    vis = ["p.visibility = 'public'"]
+    if viewer_id == user_id:
+        vis.append("p.visibility = 'private'")
+        vis.append("p.visibility = 'friends-only'")
+    
+    if viewer_id is not None and viewer_id != user_id:
+        if is_following(user_id, viewer_id):
+            vis.append("p.visibility = 'friends-only'")
+    
+    conditions.append("(" + " OR ".join(vis) + ")")
+
+    where = "WHERE " + " AND ".join(conditions)
+    sql = f"""
+        SELECT id, title, dream, visibility
+        FROM Posts p {where}
+        ORDER BY id DESC
+    """
+    return db.query(sql, args)
 
 def get_comments(user_id):
     """Retrieves all comments published by the given user ID."""
