@@ -34,7 +34,7 @@ def create_filters(user_id=None, tab="latest", q=None,
         vis.append("(p.visibility = 'private' AND p.user_id = ?)")
         args.append(user_id)
 
-        vis.append("(p.visibility = 'friends-only AND p.user_id = ?)")
+        vis.append("(p.visibility = 'friends-only' AND p.user_id = ?)")
         args.append(user_id)
 
         vis.append("""
