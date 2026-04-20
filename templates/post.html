@@ -15,8 +15,8 @@ av <a href="/user/{{ post.username }}">
 <div class="post_data">
   {% if categories %}
     <div class="item">
-      {% for cat in categories %}
-        <b>{{ cat.0 }}</b>: {{ cat.1 }}
+      {% for cat, choice in categories.items() %}
+        <b>{{ cat }}</b>: {{ choice }}
       {% endfor %}
     </div>
   {% endif %}
