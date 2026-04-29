@@ -43,11 +43,11 @@ def get_session_key():
     if KEY_PATH.exists():
         session_key = KEY_PATH.read_text()
         return session_key
-    else:
-        key = token_hex(24)
-        KEY_PATH.write_text(key)
-        session_key = key
-        return session_key
+
+    key = token_hex(24)
+    KEY_PATH.write_text(key)
+    session_key = key
+    return session_key
 
 def csrf_token():
     """Creates a random hex string with 24 random bytes."""

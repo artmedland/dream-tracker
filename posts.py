@@ -1,6 +1,7 @@
 import db
 
 def get_categories():
+    """Retrieves all available categories and options."""
     query = "SELECT category, choice FROM Categories ORDER BY id"
     result = db.query(query)
 
@@ -10,7 +11,8 @@ def get_categories():
 
     return categories
 
-def add(user_id, post_time, title, quality, dream, 
+# TODO - refactor to list of params
+def add(user_id, post_time, title, quality, dream,
         visibility, bedtime, delay):
     """Adds a post to the database."""
     db.execute("""
@@ -24,8 +26,10 @@ def add(user_id, post_time, title, quality, dream,
         visibility, bedtime, delay
     ])
 
+# TODO - use list args?
 def create_filters(user_id=None, tab="latest", q=None,
                    sleep_quality=None, tags=None, cats=None):
+    """Creates and returns arguments for query filtration."""
     conditions = []
     args = []
 
@@ -59,7 +63,7 @@ def create_filters(user_id=None, tab="latest", q=None,
         ex = f"%{q}%"
         conditions.append("(p.title LIKE ? OR p.dream LIKE ?)")
         args.extend([ex, ex])
-    
+
     if sleep_quality is not None:
         conditions.append("p.sleep_quality = ?")
         args.append(sleep_quality)
@@ -90,17 +94,19 @@ def create_filters(user_id=None, tab="latest", q=None,
     else:
         where = ""
 
-    return where, args    
+    return where, args
 
-def get_posts(user_id=None, tab="latest", q=None, 
+# TODO - list args
+def get_posts(user_id=None, tab="latest", q=None,
              sleep_quality=None, tags=None, cats=None,
              limit=None, offset=0):
+    """Gets all available posts with the given filter conditions."""
 
     # if logged out, show no friend posts.
     if tab == "friends" and user_id is None:
         return []
-    
-    where, args = create_filters(user_id, tab, q, sleep_quality, 
+
+    where, args = create_filters(user_id, tab, q, sleep_quality,
                                 tags, cats)
 
     sql = """
@@ -117,7 +123,7 @@ def get_posts(user_id=None, tab="latest", q=None,
         order = "ORDER BY like_count DESC, p.id DESC"
     else:
         order = "ORDER BY p.id DESC"
-    
+
     query = f"{sql} {where} {order}"
 
     if limit:
@@ -129,7 +135,7 @@ def get_posts(user_id=None, tab="latest", q=None,
 def posts_per_page(user_id=None, tab="latest", q=None,
                    sleep_quality=None, tags=None, cats=None):
     """Counts the number of posts per page that match filters."""
-    
+
     # if logged out, show no friend posts
     if tab == "friends" and user_id is None:
         return 0
@@ -179,18 +185,21 @@ def delete(post_id):
     db.execute("DELETE FROM Posts WHERE id = ?", [post_id])
 
 def categorize_post(post_id):
+    """Get selected post categories and choices for a post."""
     query = db.query("""
         SELECT category, choice FROM PostCategories WHERE post_id = ?
     """, [post_id])
     return [(q["category"], q["choice"]) for q in query]
 
 def categorize_dict(post_id):
+    """Get selected post categories for a post, and return dict."""
     query = db.query("""
         SELECT category, choice FROM PostCategories WHERE post_id = ?
     """, [post_id])
     return {q["category"]: q["choice"] for q in query}
 
 def update_categories(post_id, categories):
+    """Updates a post's category selections."""
     db.execute("DELETE FROM PostCategories WHERE post_id = ?", [post_id])
     for cat, choice in categories:
         db.execute("""
@@ -198,6 +207,7 @@ def update_categories(post_id, categories):
             VALUES (?, ?, ?)""", [post_id, cat, choice])
 
 def add_tags(post_id, tags):
+    """Adds the given tags to the given post."""
     post_tags = []
     for t in tags:
         post_tags.append((post_id, t))
@@ -209,24 +219,29 @@ def add_tags(post_id, tags):
     )
 
 def delete_tags(post_id):
+    """Removes all tags from a post."""
     db.execute("DELETE FROM Tags WHERE post_id = ?", [post_id])
 
 def get_tags(post_id):
+    """Retrieves all tags from a post."""
     return db.query("SELECT tag FROM Tags WHERE post_id = ?", [post_id])
 
 def parse_tags(tags):
+    """Splits a comma-separated tag string into a set list."""
     if not tags:
         return []
     tags = {t.strip() for t in tags.split(",") if t.strip()}
     return list(tags)
 
 def add_comment(post_id, user_id, content):
+    """Adds a comment to the given post."""
     db.execute("""
         INSERT INTO Comments (post_id, user_id, content)
         VALUES (?, ?, ?)
     """, [post_id, user_id, content])
 
 def get_comments(post_id):
+    """Retrieves all available comments on a post."""
     return db.query("""
         SELECT c.content, c.id comment_id, 
                u.id user_id, u.username
@@ -236,10 +251,12 @@ def get_comments(post_id):
     """, [post_id])
 
 def comment_count(post_id):
+    """Counts the number of comments on a post."""
     query = "SELECT COUNT(post_id) count FROM Comments WHERE post_id = ?"
     return db.query(query, [post_id])
 
 def like(post_id, user_id, state):
+    """Sets the given user's like status to state on the given post."""
     if state:
         db.execute("""
             INSERT INTO Likes (post_id, user_id)
@@ -253,17 +270,21 @@ def like(post_id, user_id, state):
         """, [post_id, user_id])
 
 def get_likes(post_id):
+    """Retrieves all user ids who like the given post."""
     query = "SELECT user_id FROM Likes WHERE post_id = ?"
     return db.query(query, [post_id])
 
 def like_count(post_id):
+    """Counts the number of likes on a post."""
     query = "SELECT COUNT(user_id) count FROM Likes WHERE post_id = ?"
     return db.query(query, [post_id])[0]["count"]
 
 def user_count():
+    """Counts the number of registered users on the site."""
     query = "SELECT COUNT(id) count FROM Users"
     return db.query(query)[0]["count"]
 
 def post_count():
+    """Counts the number of published posts on the site."""
     query = "SELECT COUNT(id) count FROM Posts"
     return db.query(query)[0]["count"]

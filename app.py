@@ -1,16 +1,15 @@
-from flask import Flask
-from flask import render_template, session
-from flask import abort, request, redirect
-
-from flask import g
-from time import time
-
-from werkzeug.exceptions import HTTPException
-from markupsafe import Markup, escape
-
 from datetime import datetime
 import sqlite3
 import re
+# from time import time
+
+from flask import Flask
+from flask import render_template, session
+from flask import abort, request, redirect
+# from flask import g
+
+from werkzeug.exceptions import HTTPException
+from markupsafe import Markup, escape
 
 import db
 import config
@@ -28,6 +27,7 @@ def logged_in() -> bool:
     return "user_id" in session
 
 def check_csrf() -> bool:
+    """Blocks user access if secret CSRF token is invalid."""
     if "csrf_token" not in request.form:
         abort(403)
     if request.form["csrf_token"] != session["csrf_token"]:
@@ -35,6 +35,7 @@ def check_csrf() -> bool:
 
 @app.template_filter()
 def show_lines(content):
+    """Markdown filter for page content."""
     content = str(escape(content))
     content = ezformat.escape(content)
 
@@ -47,11 +48,11 @@ def show_lines(content):
 
 @app.route("/")
 def index():
+    # TODO - refactor
     n = config.MAX_PREVIEW_LENGTH
     limit = config.POST_LIMIT
 
     page = max(request.args.get("page", 1, type=int), 1)
-    print(page)
     offset = (page - 1) * limit
 
     tab = request.args.get("t", "latest")
@@ -65,7 +66,7 @@ def index():
             quality_filter = int(quality_filter)
         except ValueError:
             quality_filter = None
-    
+
     tags = posts.parse_tags(request.args.get("tags", "").strip())
 
     categories = posts.get_categories()
@@ -132,9 +133,13 @@ def user_page(username):
     if logged_in():
         viewer_id = session["user_id"]
 
-    posts = users.posts(user_id, viewer_id)
-    comments = users.get_comments(user_id) if tab == "comments" else None
-    liked_posts = users.get_likes(user_id) if tab == "likes" else None
+    post_list = users.posts(user_id, viewer_id)
+
+    comments = liked_posts = None
+    if tab == "comments":
+        comments = users.get_comments(user_id) or None
+    if tab == "likes":
+        liked_posts = users.get_likes(user_id) or None
 
     is_following = False
     if "user_id" in session:
@@ -143,7 +148,7 @@ def user_page(username):
             target_user=user_id)
 
     followers = users.get_followers(user_id)
-    like_count = users.get_like_count(user_id) 
+    like_count = users.get_like_count(user_id)
 
     data = {
         "time": f"Användare sedan {time}",
@@ -155,7 +160,7 @@ def user_page(username):
         user=user,
         data=data,
         tab=tab,
-        posts=posts,
+        posts=post_list,
         liked_posts=liked_posts,
         comments=comments,
         followers=followers,
@@ -199,7 +204,9 @@ def display_post(post_id):
         user_id = session["user_id"]
         is_liked = users.has_liked(user_id, post_id)
         is_poster = user_id == poster_id
-        is_friend = users.is_following(poster_id, user_id) or is_poster
+
+        is_friend = users.is_following(poster_id, user_id)
+        is_friend = is_friend or is_poster
 
     if visibility != "public" and user_id is None:
         abort(403, config.ERRORS["login"])
@@ -266,7 +273,7 @@ def publish():
     time = datetime.now()
     post_time = time.strftime("%Y-%m-%dT%H:%M:%S")
 
-    bedtime_hour = request.form["bedtime-h"] or 0 
+    bedtime_hour = request.form["bedtime-h"] or 0
     bedtime_min = request.form["bedtime-m"] or 0
     bedtime = f"{bedtime_hour}:{bedtime_min}"
     bedtime = f"{time.strftime("%Y-%m-%d")}T{bedtime}:00"
@@ -303,7 +310,6 @@ def like():
 
     post_id = request.form["post_id"]
     user_id = session["user_id"]
-    post = posts.get(post_id) or abort(404, config.ERRORS["nopost"])
 
     try:
         state = not users.has_liked(user_id, post_id)
@@ -315,7 +321,7 @@ def like():
     return redirect(f"/post/{post_id}")
 
 @app.route("/comment", methods=["POST"])
-def comment():
+def publish_comment():
     check_csrf()
     if not logged_in():
         abort(401, config.ERRORS["login"])
@@ -395,7 +401,7 @@ def edit():
         cat = c.split(":")
         categories.append((cat[0], cat[1]))
 
-    bedtime_hour = request.form["bedtime-h"] or 0 
+    bedtime_hour = request.form["bedtime-h"] or 0
     bedtime_min = request.form["bedtime-m"] or 0
     bedtime = f"{bedtime_hour}:{bedtime_min}"
     bedtime = f"{time.strftime("%Y-%m-%d")}T{bedtime}:00"
@@ -499,12 +505,12 @@ def logout():
 def error_page(e, prev="/"):
     return render_template("error.html", error=e, prev=prev), e.code
 
-@app.before_request
-def before_request():
-    g.start_time = time()
+# @app.before_request
+# def before_request():
+#     g.start_time = time()
 
-@app.after_request
-def after_request(response):
-    t = round(time() - g.start_time, 2)
-    print(f">> Request time: {t} seconds")
-    return response
+# @app.after_request
+# def after_request(response):
+#     t = round(time() - g.start_time, 2)
+#     print(f">> Request time: {t} seconds")
+#     return response

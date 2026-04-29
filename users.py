@@ -39,11 +39,11 @@ def posts(user_id, viewer_id=None):
     if viewer_id == user_id:
         vis.append("p.visibility = 'private'")
         vis.append("p.visibility = 'friends-only'")
-    
+
     if viewer_id is not None and viewer_id != user_id:
         if is_following(user_id, viewer_id):
             vis.append("p.visibility = 'friends-only'")
-    
+
     conditions.append("(" + " OR ".join(vis) + ")")
 
     where = "WHERE " + " AND ".join(conditions)
@@ -79,6 +79,7 @@ def get_likes(user_id):
     return db.query(query, [user_id])
 
 def get_like_count(user_id):
+    """Counts the number of likes across a user's posts."""
     result = db.query("""
         SELECT COUNT(l.id) likes
         FROM Likes l
@@ -88,6 +89,7 @@ def get_like_count(user_id):
     return result["likes"] if result else 0
 
 def has_liked(user_id, post_id):
+    """Checks if a user has liked a post."""
     return db.query("""
         SELECT COUNT(id) likes
         FROM Likes
@@ -97,6 +99,7 @@ def has_liked(user_id, post_id):
     """, [user_id, post_id])[0]["likes"] > 0
 
 def is_following(follower, target_user):
+    """Checks if a user is following another user."""
     return db.query("""
         SELECT COUNT(id) follows
         FROM Friends
@@ -105,6 +108,7 @@ def is_following(follower, target_user):
     """, [follower, target_user])[0]["follows"] > 0
 
 def get_followers(user_id):
+    """Retrieves all users who are following the given user."""
     query = """
         SELECT u.id, u.username
         FROM Friends f
@@ -113,12 +117,14 @@ def get_followers(user_id):
     return db.query(query, [user_id])
 
 def follow(user_id, friend_id):
+    """Creates a follower relation between two given users."""
     db.execute("""
         INSERT INTO Friends (user_id, friend_id)
         VALUES (?, ?)
     """, [user_id, friend_id])
 
 def unfollow(user_id, friend_id):
+    """Removes the follower relation created by the ~follow method"""
     db.execute("""
         DELETE FROM Friends
         WHERE user_id = ?

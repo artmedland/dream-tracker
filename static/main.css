@@ -8,6 +8,12 @@
   --lgray: #FFFFFFc3;
 }
 
+@media (max-width: 500px) {
+  :root {
+    font-size: 24px;
+  }
+}
+
 input, select, 
 textarea, button {
   font: inherit;

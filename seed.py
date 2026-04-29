@@ -23,68 +23,89 @@ con.commit()
 con.execute("PRAGMA foreign_keys = ON")
 
 USER_COUNT = 10_000
-POST_COUNT = 1_000_000
-COMMENT_COUNT = 3_000_000
-LIKE_COUNT = 50_000_000
+POST_COUNT = 100_000
+COMMENT_COUNT = 300_000
+LIKE_COUNT = 500_000
 TAG_COUNT = 600_000
-FRIEND_COUNT = 70_000
+FRIEND_COUNT = 700_000
 
 USER_CREATE_TIME = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 POST_CREATE_TIME = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 TAGS = ["mardröm", "klardröm", "vision", "hallucination"]
 
 errs = 0
+msgs = set()
 
-try:
-    for i in range(USER_COUNT):
+for i in range(USER_COUNT):
+    try:
         con.execute("""
             INSERT INTO Users (username, created_at)
             VALUES (?, ?)
         """, [f"user{i+1}", USER_CREATE_TIME])
+    except Exception as ex:
+        msgs.add(str(ex))
+        errs += 1
 
-    con.commit()
-    user_ids = list(range(USER_COUNT))
-    for i in range(POST_COUNT):
+con.commit()
+user_ids = list(range(USER_COUNT))
+for i in range(POST_COUNT):
+    try:
         user = random.choice(user_ids)
         con.execute("""
             INSERT INTO Posts (user_id, post_time, title, sleep_quality,
                             dream, visibility, bedtime, sleep_delay)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, [
-            user+1, POST_CREATE_TIME, f"Inlägg {i}", 
-            random.randint(1, 5), "dröm", "public", 
+            user+1, POST_CREATE_TIME, f"Inlägg {i}",
+            random.randint(1, 5), "dröm", "public",
             POST_CREATE_TIME, random.randint(0, 775)
         ])
+    except Exception as ex:
+        msgs.add(str(ex))
+        errs += 1
 
-    post_ids = list(range(POST_COUNT))
+post_ids = list(range(POST_COUNT))
 
-    con.commit()
-    for i in range(COMMENT_COUNT):
+con.commit()
+for i in range(COMMENT_COUNT):
+    try:
         pid = random.choice(post_ids) + 1
         uid = random.choice(user_ids) + 1
         con.execute("""
             INSERT INTO Comments (post_id, user_id, content)
                 VALUES (?, ?, ?)""", [pid, uid, "Hello!"])
+    except Exception as ex:
+        msgs.add(str(ex))
+        errs += 1
 
-    con.commit()
-    for i in range(LIKE_COUNT):
+con.commit()
+for i in range(LIKE_COUNT):
+    try:
         pid = random.choice(post_ids) + 1
         uid = random.choice(user_ids) + 1
         con.execute("INSERT INTO Likes (post_id, user_id) VALUES (?, ?)",
             [pid, uid])
+    except Exception as ex:
+        msgs.add(str(ex))
+        errs += 1
 
-    con.commit()    
-    for i in range(TAG_COUNT):
+con.commit()
+for i in range(TAG_COUNT):
+    try:
         pid = random.choice(post_ids) + 1
         tag = random.choice(TAGS)
         con.execute("INSERT INTO Tags (post_id, tag) VALUES (?, ?)",
             [pid, tag])
+    except Exception as ex:
+        msgs.add(str(ex))
+        errs += 1
 
-    con.commit()
+con.commit()
 
-    i = 0
-    friends = set()
-    while len(friends) < FRIEND_COUNT:
+i = 0
+friends = set()
+while len(friends) < FRIEND_COUNT:
+    try:
         if i > FRIEND_COUNT * 2:
             break
         i += 1
@@ -99,21 +120,29 @@ try:
             INSERT INTO Friends (user_id, friend_id)
                 VALUES (?, ?)
         """, [a, b])
+    except Exception as ex:
+        msgs.add(str(ex))
+        errs += 1
 
-    con.commit()
-    cats = con.execute("""
-            SELECT category, choice 
-            FROM Categories"""
-        ).fetchall()
+con.commit()
+cats = con.execute("""
+        SELECT category, choice 
+        FROM Categories"""
+    ).fetchall()
 
-    for i in range(POST_COUNT):
+for i in range(POST_COUNT):
+    try:
         pid = random.choice(post_ids)
+        cat = random.choice(cats)
         con.execute("""
             INSERT INTO PostCategories (post_id, category, choice)
                 VALUES (?, ?, ?)""", [pid, cat[0], cat[1]])
-except Exception:
-    errs += 1
+    except Exception as ex:
+        msgs.add(str(ex))
+        errs += 1
 
 con.commit()
 con.close()
 print(f"Completed with {errs} errors")
+for m in list(msgs):
+    print(f" > {m}")
