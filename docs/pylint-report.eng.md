@@ -38,6 +38,16 @@ db.py:53:0: C0116: Missing function or method docstring (missing-function-docstr
 db.py:58:0: C0116: Missing function or method docstring (missing-function-docstring)
 ************* Module posts
 posts.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+posts.py:14:0: R0913: Too many arguments (8/5) (too-many-arguments)
+posts.py:14:0: R0917: Too many positional arguments (8/5) (too-many-positional-arguments)
+posts.py:28:0: R0913: Too many arguments (6/5) (too-many-arguments)
+posts.py:28:0: R0917: Too many positional arguments (6/5) (too-many-positional-arguments)
+posts.py:97:0: R0913: Too many arguments (8/5) (too-many-arguments)
+posts.py:97:0: R0917: Too many positional arguments (8/5) (too-many-positional-arguments)
+posts.py:132:0: R0913: Too many arguments (6/5) (too-many-arguments)
+posts.py:132:0: R0917: Too many positional arguments (6/5) (too-many-positional-arguments)
+posts.py:163:0: R0913: Too many arguments (7/5) (too-many-arguments)
+posts.py:163:0: R0917: Too many positional arguments (7/5) (too-many-positional-arguments)
 ************* Module seed
 seed.py:45:11: W0718: Catching too general exception Exception (broad-exception-caught)
 seed.py:63:11: W0718: Catching too general exception Exception (broad-exception-caught)
@@ -105,3 +115,15 @@ In `seed.py`, Pylint warns that the `constant name "errs" doesn't conform to UPP
 Notably, `seed:~errs` *is not a constant, but a variable* – the value of this field is retrieved and updated throughout the program.
 
 > If it looks like a variable, acts like a variable and quacks like a variable -- it's probably a variable!
+
+### Too many arguments
+
+In the Posts module, Pylint warns that there are too many (positional) arguments. This refers to such methods as
+
+```
+def create_filters(user_id=None, tab="latest", q=None,
+                   sleep_quality=None, tags=None, cats=None):
+    ...
+```
+
+which contains 6 arguments. These usually indicative of code smell – with a greater number of arguments, particularly positional ones, the likelihood of making a mistake (e.g. invoking the method with the arguments in the wrong order) grows. Such methods should instead be recomposed or refactored to several smaller, self-contained helper functions. However, the developer considers this matter to be minor, as the functionality and maintainability of the provided methods is at an acceptable level.

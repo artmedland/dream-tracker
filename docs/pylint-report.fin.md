@@ -38,6 +38,16 @@ db.py:53:0: C0116: Missing function or method docstring (missing-function-docstr
 db.py:58:0: C0116: Missing function or method docstring (missing-function-docstring)
 ************* Module posts
 posts.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+posts.py:14:0: R0913: Too many arguments (8/5) (too-many-arguments)
+posts.py:14:0: R0917: Too many positional arguments (8/5) (too-many-positional-arguments)
+posts.py:28:0: R0913: Too many arguments (6/5) (too-many-arguments)
+posts.py:28:0: R0917: Too many positional arguments (6/5) (too-many-positional-arguments)
+posts.py:97:0: R0913: Too many arguments (8/5) (too-many-arguments)
+posts.py:97:0: R0917: Too many positional arguments (8/5) (too-many-positional-arguments)
+posts.py:132:0: R0913: Too many arguments (6/5) (too-many-arguments)
+posts.py:132:0: R0917: Too many positional arguments (6/5) (too-many-positional-arguments)
+posts.py:163:0: R0913: Too many arguments (7/5) (too-many-arguments)
+posts.py:163:0: R0917: Too many positional arguments (7/5) (too-many-positional-arguments)
 ************* Module seed
 seed.py:45:11: W0718: Catching too general exception Exception (broad-exception-caught)
 seed.py:63:11: W0718: Catching too general exception Exception (broad-exception-caught)
@@ -103,3 +113,17 @@ Tämä viittaa epätavalliseen Pythonin ominaisuuteen – tyhjä lista alustetaa
 ### Vakion nimeämistyyli
 
 `seed.py`-tiedostossa, Pylint varoittaa, että vakion nimeämistyyli ei seuraa PÖLKKYKIRJOITUS_TYYLIÄ – `constant name "errs" doesn't conform to UPPER_CASE naming style`. Kyseistä tyyliä on käytetty muualla ohjelmassa, etenkin `seed`- ja `config`-moduuleissa. Huomaa, että `seed:~errs` *ei ole vakio, vaan muuttuja, jonka arvo haetaan ja päivitetään moneen kertaan ohjelman aikana*.
+
+### Parametrien lukumäärä
+
+Posts-moduulissa Pylint herjaa, että argumenttien määrä on liian suuri. Tämä viittaa esimerkiksi metodiin
+
+```
+def create_filters(user_id=None, tab="latest", q=None,
+                   sleep_quality=None, tags=None, cats=None):
+    ...
+```
+
+joka ottaa kuusi (6) parametria. Jos metodi sisältää liian monta parametria, on helpompi tehdä virhe funktiokutsun yhteydessä, esimerkiksi listaamalla parametrit väärässä järjestyksessä.
+
+Parempi käytäntö olisi ehdottomasti faktoroida funktio useampaan pienempään apufunktioon. Kehittäjä kuitenkin katsoo, että koodin toimivuus ja muokattavuus on siitä huolimatta hyväksyttävällä tasolla.

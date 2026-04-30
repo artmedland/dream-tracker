@@ -11,7 +11,6 @@ def get_categories():
 
     return categories
 
-# TODO - refactor to list of params
 def add(user_id, post_time, title, quality, dream,
         visibility, bedtime, delay):
     """Adds a post to the database."""
@@ -26,7 +25,6 @@ def add(user_id, post_time, title, quality, dream,
         visibility, bedtime, delay
     ])
 
-# TODO - use list args?
 def create_filters(user_id=None, tab="latest", q=None,
                    sleep_quality=None, tags=None, cats=None):
     """Creates and returns arguments for query filtration."""
@@ -96,7 +94,6 @@ def create_filters(user_id=None, tab="latest", q=None,
 
     return where, args
 
-# TODO - list args
 def get_posts(user_id=None, tab="latest", q=None,
              sleep_quality=None, tags=None, cats=None,
              limit=None, offset=0):

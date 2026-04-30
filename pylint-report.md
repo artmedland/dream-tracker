@@ -38,6 +38,16 @@ db.py:53:0: C0116: Missing function or method docstring (missing-function-docstr
 db.py:58:0: C0116: Missing function or method docstring (missing-function-docstring)
 ************* Module posts
 posts.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+posts.py:14:0: R0913: Too many arguments (8/5) (too-many-arguments)
+posts.py:14:0: R0917: Too many positional arguments (8/5) (too-many-positional-arguments)
+posts.py:28:0: R0913: Too many arguments (6/5) (too-many-arguments)
+posts.py:28:0: R0917: Too many positional arguments (6/5) (too-many-positional-arguments)
+posts.py:97:0: R0913: Too many arguments (8/5) (too-many-arguments)
+posts.py:97:0: R0917: Too many positional arguments (8/5) (too-many-positional-arguments)
+posts.py:132:0: R0913: Too many arguments (6/5) (too-many-arguments)
+posts.py:132:0: R0917: Too many positional arguments (6/5) (too-many-positional-arguments)
+posts.py:163:0: R0913: Too many arguments (7/5) (too-many-arguments)
+posts.py:163:0: R0917: Too many positional arguments (7/5) (too-many-positional-arguments)
 ************* Module seed
 seed.py:45:11: W0718: Catching too general exception Exception (broad-exception-caught)
 seed.py:63:11: W0718: Catching too general exception Exception (broad-exception-caught)
@@ -103,3 +113,17 @@ Detta innebär att argumentet `params=[]` initialiserar en tom lista. Bland Pyth
 
 I `seed.py` varnar Pylint att `constant name "errs" doesn't conform to UPPER_CASE naming style`. Samma stora bokstävers `snake_case`-stil har använts annanstans i programmet, huvudsakligen i `seed` och `config`-modulerna. Variablen `seed:~errs` är dock ingen konstant, eftersom den används och uppdateras i programmet! 
 > Om den ser ut som en variabel, beter sig som en variabel, och kvackar som en variabel -- är det sannolikt en variabel!
+
+### Antal argument
+
+I Posts-modulen varnar Pylint att antalet argument är för högt. Detta hänvisar till funktioner som
+
+```
+def create_filters(user_id=None, tab="latest", q=None,
+                   sleep_quality=None, tags=None, cats=None):
+    ...
+```
+
+vilket tar emot 6 st argument. Med ett högre antal argument är det lättare att göra misstag, exempelvis genom att anropa funktionen med argumenten i fel ordning. Dessa funktioner bör i stället omfaktoreras till självständiga småskaliga hjälpfunktioner.
+
+Däremot anser utvecklaren att programmet fungerar väl och att kodens underhållsmässighet är på en acceptabel nivå.
