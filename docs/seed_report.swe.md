@@ -38,9 +38,9 @@ Varje gång man utför en HTML-förfrågan skriver applikationen ut tidsmätning
 
 ### Resultat
 
-Resultat är medelvärden av tre (3) mätningar, avrundade till två decimal. Varje gång laddades sidan på ett sätt som förbigår information som lagrats i cacheminne (`CTRL+F5`).
+Varje resultat är medelvärdet av tre (3) mätningar, avrundade till två decimal. Varje gång laddades sidan på ett sätt som förbigår information som lagrats i cacheminne (`CTRL+F5`).
 
-#### Utan testdata
+#### Kontroll
 
 Vi börjar med att skapa bara en användare och ett inlägg.
 
@@ -53,7 +53,7 @@ Vi börjar med att skapa bara en användare och ett inlägg.
 
 #### Testdata
 
-Med testdatan som skapas med `seed.py`, men utan sidor eller index
+Med testdatan som skapas med `seed.py`, men utan andra optimeringsmetoder
 
 | Sida | Tid |
 | -----| --- |
@@ -62,11 +62,11 @@ Med testdatan som skapas med `seed.py`, men utan sidor eller index
 | användarsida | 0.23 s |
 | andra sidor | 0.03 s |
 
-Applikationen är oanvändbart långsam.
+är applikationen oanvändbart långsam.
 
 #### Testdata med sidor
 
-Med testdata, nu med sidor men inget index
+Med samma testdata, men sidor har delats till mindre delar som hämtar bara en bråkdel av hela datamängden, fortfarande utan indexering
 
 | Sida | Tid |
 | -----| --- |
@@ -77,7 +77,7 @@ Med testdata, nu med sidor men inget index
 
 #### Testdata med sidor samt index
 
-Med testdata, sidor och index:
+Dessa mätresultat tas med samma omständigheter som i föregående test, men nu innehåller databasen effektiverande indexer på dess långsammaste delar.
 
 | Sida | Tid |
 | -----| --- |
@@ -88,8 +88,8 @@ Med testdata, sidor och index:
 
 ### Slutsatser
 
-Applikationen fungerar relativt väl även med tiotals miljoner rader i databasen. Indexet och delade sidor gynnade applikationens effektivitet, och visar sig även att vara nödvändiga med stora datamängder.
+Applikationen fungerar relativt väl även med tiotals miljoner rader i databasen. Indexet och delade sidor gynnade applikationens effektivitet, och visar sig även att vara absolut nödvändiga med stora datamängder.
 
-Applikationen fungerar snabbare ifall man inte är inloggad, eftersom den inte blir tvungen att jämföra inläggets synlighetsvillkor med användarens rättigheter.
+Applikationen fungerar snabbare ifall man inte är inloggad, eftersom den inte blir tvungen att jämföra inläggets synlighetsvillkor med användarens rättigheter. Detta anses vara en nödvändig biverkning av applikationens funktion.
 
-För att snabba upp framsidan kan även antalet användare som gillar varje inlägg lagras i databasen direkt, hellre än att räkna den om varje gång, exempelvis som ett heltal i `Posts`-tabellen som uppdateras med SQL `TRIGGER`-kommandot.
+För att snabba upp framsidan kan även antalet användare som gillar varje inlägg lagras i databasen direkt, hellre än att räkna den om varje gång, exempelvis som ett heltal i `Posts`-tabellen som uppdateras med SQL `TRIGGER`-kommandot. Detta anses dock vara en onödigt stor förändring för applikationen i detta skede av utvecklingen.

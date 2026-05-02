@@ -126,4 +126,6 @@ def create_filters(user_id=None, tab="latest", q=None,
     ...
 ```
 
-which contains 6 arguments. These usually indicative of code smell – with a greater number of arguments, particularly positional ones, the likelihood of making a mistake (e.g. invoking the method with the arguments in the wrong order) grows. Such methods should instead be recomposed or refactored to several smaller, self-contained helper functions. However, the developer considers this matter to be minor, as the functionality and maintainability of the provided methods is at an acceptable level.
+which contains 6 arguments. These usually indicative of code smell – with a greater number of arguments, particularly positional ones, the likelihood of making a mistake (e.g. invoking the method with the arguments in the wrong order) grows. 
+
+Such methods should instead be recomposed or refactored to several smaller, self-contained helper functions. However, the developer considers this matter to be minor, as the functionality and maintainability of the provided methods is at an acceptable level. This is seen as an intuitive way to directly handle the SQL database requests and parameters that the method executes. 

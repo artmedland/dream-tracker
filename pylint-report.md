@@ -126,4 +126,4 @@ def create_filters(user_id=None, tab="latest", q=None,
 
 vilket tar emot 6 st argument. Med ett högre antal argument är det lättare att göra misstag, exempelvis genom att anropa funktionen med argumenten i fel ordning. Dessa funktioner bör i stället omfaktoreras till självständiga småskaliga hjälpfunktioner.
 
-Däremot anser utvecklaren att programmet fungerar väl och att kodens underhållsmässighet är på en acceptabel nivå.
+Däremot anser utvecklaren att programmet fungerar väl och att kodens underhållsmässighet är på en acceptabel nivå. Dessa metoder och deras argument behandlar direkt SQL-kommandon och deras parametrar, och detta anses vara ett naturligt sätt att framträda.

@@ -120,6 +120,11 @@ textarea {
   padding: 1rem;
 }
 
+.user_context .comment {
+  display: block;
+
+}
+
 .user_context .comment .title {
   font-weight: bold;
 }
@@ -129,6 +134,7 @@ textarea {
 }
 
 .comments {
+  padding-top: 0.5em;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;

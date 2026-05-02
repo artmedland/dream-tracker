@@ -46,13 +46,10 @@ def show_lines(content):
     content = ezformat.unescape(content)
     return Markup(content)
 
-@app.route("/")
-def index():
-    # TODO - refactor
-    n = config.MAX_PREVIEW_LENGTH
-    limit = config.POST_LIMIT
-
+def filter_posts():
+    """Creates filter parameters for search and filtration."""
     page = max(request.args.get("page", 1, type=int), 1)
+    limit = config.POST_LIMIT
     offset = (page - 1) * limit
 
     tab = request.args.get("t", "latest")
@@ -78,6 +75,34 @@ def index():
 
     user_id = session["user_id"] if logged_in() else None
 
+    return (page, limit, offset, tab, query,
+            quality_filter, tags, cats, user_id)
+
+def post_previews(post_list, max_length=None):
+    """Truncates each post in post_list exceeding max_length."""
+    result = []
+
+    if max_length is None:
+        max_length = config.MAX_PREVIEW_LENGTH
+
+    for post in post_list:
+        post = dict(post)
+        body = post["dream"] or ""
+
+        if len(body) > max_length:
+            post["preview"] = f"{body[:max_length]}..."
+        else:
+            post["preview"] = body
+
+        result.append(post)
+
+    return result
+
+@app.route("/")
+def index():
+    (page, limit, offset, tab, query,
+     quality_filter, tags, cats, user_id) = filter_posts()
+
     post_list = posts.get_posts(
         user_id=user_id,
         tab=tab,
@@ -88,6 +113,7 @@ def index():
         limit=limit,
         offset=offset
     )
+
     total_posts = posts.posts_per_page(
         user_id=user_id,
         tab=tab,
@@ -96,27 +122,16 @@ def index():
         tags=tags,
         cats=cats
     )
+
     page_count = (total_posts + limit - 1) // limit
-
-    retrieved = []
-    for post in post_list:
-        post = dict(post)
-
-        body = post["dream"] or ""
-
-        if len(body) > config.MAX_PREVIEW_LENGTH:
-            post["preview"] = f"{body[:n]}..."
-        else:
-            post["preview"] = body
-
-        retrieved.append(post)
+    retrieved = post_previews(post_list)
 
     return render_template(
         "index.html", 
         user_count=posts.user_count(),
         post_count=posts.post_count(),
         posts=retrieved,
-        categories=categories,
+        categories=posts.get_categories(),
         page=page,
         page_count=page_count,
         limit=limit)
@@ -127,7 +142,7 @@ def user_page(username):
     user = users.get(user_id) or abort(404, config.ERRORS["nouser"])
 
     tab = request.args.get("tab", "posts")
-    time = users.join_date(user_id, user["created_at"])
+    join_time = users.join_date(user_id, user["created_at"])
 
     viewer_id = None
     if logged_in():
@@ -151,7 +166,7 @@ def user_page(username):
     like_count = users.get_like_count(user_id)
 
     data = {
-        "time": f"Användare sedan {time}",
+        "time": f"Användare sedan {join_time}",
         "like_count": f"{like_count} likes"
     }
 
@@ -189,17 +204,28 @@ def unfollow(user_id):
     username = users.get(user_id)["username"]
     return redirect(f"/user/{username}")
 
+def check_post_visibility(post, user_id, is_poster, is_friend):
+    """Checks if a post should be visible to a user."""
+    visibility = post["visibility"]
+
+    if visibility != "public" and user_id is None:
+        abort(403, config.ERRORS["login"])
+    if visibility == "private" and not is_poster:
+        abort(403, config.ERRORS["unavail"])
+    if visibility == "friends-only" and not is_friend:
+        abort(403, config.ERRORS["unavail"])
+
 @app.route("/post/<int:post_id>")
 def display_post(post_id):
-    post = posts.get(post_id) or abort(404, config.ERRORS["nopost"])
-    visibility = post["visibility"]
-    poster_id = post["user_id"]
+    post = posts.get(post_id)
+    if not post:
+        abort(404, config.ERRORS["nopost"])
 
+    poster_id = post["user_id"]
     user_id = None
 
     is_liked = is_friend = is_poster = False
 
-    # TODO - recompose
     if logged_in():
         user_id = session["user_id"]
         is_liked = users.has_liked(user_id, post_id)
@@ -208,14 +234,7 @@ def display_post(post_id):
         is_friend = users.is_following(poster_id, user_id)
         is_friend = is_friend or is_poster
 
-    if visibility != "public" and user_id is None:
-        abort(403, config.ERRORS["login"])
-
-    if visibility == "private" and not is_poster:
-        abort(403, config.ERRORS["unavail"])
-
-    if visibility == "friends-only" and not is_friend:
-        abort(403, config.ERRORS["unavail"])
+    check_post_visibility(post, user_id, is_poster, is_friend)
 
     comments = posts.get_comments(post_id)
     likes = posts.get_likes(post_id)
@@ -479,7 +498,7 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
 
-    result = users.login(username, password)
+    result = users.get_auth(username)
     if not result:
         abort(403, config.ERRORS["nouser"])
 

@@ -7,7 +7,10 @@
 
 {% if session.user_id %}
   <h3>
-    Välkommen, {{ session.username }}. Sov du gott? <br />
+    Välkommen, 
+    <a href="/user/{{ session.username }}">
+      {{ session.username }}</a>. 
+    Sov du gott? <br />
   </h3>
 {% else %}
   <h3>
@@ -20,9 +23,9 @@
   och {{ post_count }} inlägg.
 </p>
 
-<h3>Sök efter inlägg</h3>
+<h3><label for="search">Sök efter inlägg</label></h3>
 
-<form action="/" method="get" class="search">
+<form action="/" method="get" class="search" name="search">
   <input type="text" name="q" placeholder="Sök efter inlägg"
   value="{{ request.args.get('q', '') }}">
 
@@ -31,7 +34,7 @@
   <button type="submit">Sök</button>
 
   <div class="filter">
-    Sömnkvalitet 
+    <label for="by_quality">Sömnkvalitet</label> 
     <select name="by_quality">
       <option value="none" 
       {% if request.args.get('by_quality') == 'none' %} 

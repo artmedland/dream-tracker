@@ -40,36 +40,36 @@ Every time a user makes an HTML request, the app prints a time measurement to th
 
 Each result is the average value of three (3) measurements, rounded to two decimal places. Each time, the page was loaded with a cache bypass (`CTRL+F5`).
 
-#### No dummy data
+#### Control
 
 We'll begin by creating only one user and post.
 
 | Page | Time |
-| -----| --- |
+| ---- | ---- |
 | index page | 0.05 s |
 | post | 0.03 s |
 | user page | 0.04 s |
 | other | 0.02 s |
 
-#### Testing data
+#### Dummy data
 
-With testing data created using `seed.py`, but without pagination or indexing
+With testing data created using `seed.py`, but without any optimization techniques such as pagination or indexing,
 
 | Page | Time |
-| -----| --- |
+| ---- | ---- |
 | index page | 10.34 s |
 | post | 0.07 s |
 | user page | 0.23 s |
 | other | 0.03 s |
 
-The application is unusably sluggish.
+the application is unusably sluggish.
 
 #### With pagination
 
-With test data, no indexing but pagination
+With identical dummy testing data, but with the front page split into subpages that only retrieve twenty posts at a time:
 
 | Page | Time |
-| -----| --- |
+| ---- | ---- |
 | index page | 0.74 s |
 | post | 0.04 s |
 | user page | 0.05 s |
@@ -77,10 +77,10 @@ With test data, no indexing but pagination
 
 #### Final optimizations
 
-The same testing data, with both indexing and pagination
+With precisely the same conditions as above, but in addition to pagination, the database has been equipped with effectivizing indices, the measurements are as follows:
 
 | Page | Time |
-| -----| --- |
+| ---- | ---- |
 | index page | 0.32 s |
 | post | 0.02 s |
 | user page | 0.03 s |
@@ -88,8 +88,8 @@ The same testing data, with both indexing and pagination
 
 ### Conclusions
 
-The application works relatively well, even with tens of millions of database entries. Indexing and pagination were exceedingly beneficial to the performance of the web app; evidently, these methods constitute necessity for a web app with a large database.
+The application works relatively well, even with tens of millions of database entries. Indexing and pagination were exceedingly beneficial to the performance of the web app; evidently, these methods are necessary for a web app with a large database.
 
-Pages load faster when the user is signed out. This is because the web app does not need to compare the visibility of the post with the session user's access permissions.
+Pages load faster when the user is signed out. This is because the web app does not need to compare the visibility of the post with the session user's access permissions. The developer considers this an unavoidable side effect of the post visibility functionality.
 
-In order to further speed up front page loading, it is possible to store the number of likes directly in the database, rather than aggregating on each request. This can, for instance, be accomplished by storing an integer in the `Posts` table, and updating it with the SQL `TRIGGER` command.
+In order to further speed up front page loading, it is possible to store the number of likes directly in the database, rather than aggregating on each request. This can, for instance, be accomplished by storing an integer in the `Posts` table, and updating it with the SQL `TRIGGER` command. The developer, however, considers such a change to be needlessly complex at this stage in development, particularly when considering the marginal benefit it provides.

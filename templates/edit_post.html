@@ -13,26 +13,26 @@
 
 <form action="/edit" method="post">
   <p>
-    Titel: <br />
+    <label for="title">Titel</label> <br />
     <input type="text" name="title" value="{{ post.title }}" 
     maxlength="{{ title_max }}" required/>
   </p>
 
   <p>
-    Sov du gott? <br />
+    <label for="sleep_quality">Sov du gott?</label> <br />
 
     <input type="range" id="sleep_quality" name="sleep_quality"
     min="1" max="5" step="1" value="{{ post.sleep_quality }}">
   </p>
   
   <p>
-    Vad drömde du om? <br />
+    <label for="dream">Vad drömde du om?</label> <br />
     <textarea name="dream" rows="10" cols="64" 
     maxlength="{{ dream_max }}">{{ post.dream }}</textarea>
   </p>
   
   <p>
-    Synlighet
+    <label for="visibility">Synlighet</label>
     <select name="visibility">
       <option value="public" 
         {{ "selected" if post.visibility == "public" else ""}}>
@@ -53,7 +53,7 @@
   
   {% for category in categories %}
   <div class="categories">
-    {{ category }}:
+    <label for="categories">{{ category }}</label>
     <select name="categories">
       {% for option in categories[category] %}
         {% if post_category[category] == option %}
@@ -72,7 +72,7 @@
   {% endfor %}
   
   <p>
-    Jag lade mig klockan
+    <label for="bedtime-h">Jag lade mig klockan</label>
 
     <select name="bedtime-h">
     {% for i in range(24) %}
@@ -104,7 +104,7 @@
   </p>
 
   <p>
-    Det tog mig
+    <label for="delay-h">Det tog mig</label>
     
     <select name="delay-h">
     {% for i in range(13) %}
@@ -133,11 +133,11 @@
         {% endif %}
       {% endfor %}
     </select> m
-    att få sömn.
+    <label for="bedtime-m">att få sömn.</label>
   </p>
 
   <p>
-    Nyckelord
+    <label for="tags">Nyckelord</label>
     <input type="text" name="tags" value="{{ tags }}">
   </p>
 

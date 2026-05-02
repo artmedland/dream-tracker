@@ -7,19 +7,19 @@
 
 <form action="/create_user" method="post">
   <p>
-    Användarnamn <br />
+    <label for="username">Användarnamn</label> <br />
     <input type="text" name="username" 
     maxlength="{{ username_max }}" pattern="[a-zA-Z0-9]+" 
     required />
   </p>
 
   <p>
-    Lösenord <br />
+    <label for="password1">Lösenord</label> <br />
     <input type="password" name="password1" required />
   </p>
 
   <p>
-    Lösenord igen <br />
+    <label for="password2">Lösenord igen</label> <br />
     <input type="password" name="password2" required />
   </p>
   

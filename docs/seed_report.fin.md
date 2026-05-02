@@ -34,13 +34,13 @@ def after_request(response):
     return response
 ```
 
-Joka kerta, kun käyttäjä tekee HTML-pyynnon, ohjelma tulostaa ajanmittauksen terminaaliin.
+Ohjelma tulostaa ajanmittauksen terminaaliin käyttäjän tehdessä minkä tahansa HTML-pyynnon.
 
 ### Tulokset
 
 Tulokset on ilmoitettu kolmen mittauksen keskiarvona, pyöristettynä kahteen desimaalilukuun. Sivu pyydettiin joka kerta ilman välimuistissa olevia tietoja (`CTRL+F5`).
 
-#### Ilman testidataa
+#### Kontrolli
 
 Luodaan aluksi vain yksi käyttäjä ja yksi tietokohde.
 
@@ -53,7 +53,7 @@ Luodaan aluksi vain yksi käyttäjä ja yksi tietokohde.
 
 #### Testidata
 
-Luodaan testidata `seed.py`-tiedoston avulla, mutta ilman indeksejä tai sivutusta.
+Luodaan testidata `seed.py`-tiedoston avulla, mutta ilman tehostavia tekniikoita, kuten indeksejä tai sivutusta.
 
 | Sivu | Aika |
 | -----| --- |
@@ -62,11 +62,11 @@ Luodaan testidata `seed.py`-tiedoston avulla, mutta ilman indeksejä tai sivutus
 | käyttäjäsivu | 0.23 s |
 | muut | 0.03 s |
 
-Sivu on käyttökelvottoman hidas.
+Applikaatio on käyttökelvottoman hidas.
 
 #### Testidata sivutuksella
 
-Saman testidatan kanssa, nyt siten, että sivut, joissa on paljon tietoa, on jaettu kahdenkymmenen julkaisun alasivuihin.
+Identtisen testidatan kanssa sivutetaan tiedot. Sivut ovat jaettu kahdenkymmenen julkaisun alasivuihin. Tietokannassa ei kuitenkaan vielä ole indeksejä.
 
 | Sivu | Aika |
 | -----| --- |
@@ -77,7 +77,7 @@ Saman testidatan kanssa, nyt siten, että sivut, joissa on paljon tietoa, on jae
 
 #### Testidata sivutuksella ja indekseillä
 
-Lopulta kokeillaan saman testidatan kanssa lisätä sivutuksen lisäksi tietokantaa nopeuttavia indeksejä.
+Viimeinen mittaus tehdään samoin olosuhtein kuin yllä, mutta tietokantaan on lisätty kyselyjä nopeuttavia indeksejä.
 
 | Sivu | Aika |
 | -----| --- |
@@ -88,8 +88,8 @@ Lopulta kokeillaan saman testidatan kanssa lisätä sivutuksen lisäksi tietokan
 
 ### Johtopäätökset
 
-Applikaatio toimii suhteellisen hyvin jopa kymmenien miljoonien tietokantarivien kanssa. Indeksit ja sivutus auttoivat paljon, ja olivat käytännössä pakollisia suuren datan kanssa.
+Applikaatio toimii suhteellisen hyvin jopa kymmenien miljoonien tietokantarivien kanssa. Indeksit ja sivutus auttoivat paljon, ja osoittautuivat käytännössä pakollisiksi suuren tietomäärän kanssa.
 
-Sivu latautuu nopeammin jos ei ole kirjautuneena sisään, koska applikaation ei silloin tarvitse verrata julkaisujen näkyvyysmääreiden ja käyttäjän näköluvan relaatiota.
+Sivu latautuu nopeammin jos ei ole kirjautuneena sisään, koska applikaation ei tarvitse verrata julkaisujen näkyvyysmääreiden ja käyttäjän näköluvan relaatiota. Kehittäjä katsoo, että tämä on näkyvyystoimivuuden väistämätön ominaisuus.
 
-Etusivun lataamisen nopeutta voi vielä tehostaa sillä, että tykkäysten määrä säilytettäisi suoraan tietokannassa, esimerkiksi `Posts`-taulukon rivissä `like_count` joka päivitetään SQL `TRIGGER`-komennon avulla.
+Etusivun lataamisen nopeutta voi vielä tehostaa sillä, että tykkäysten määrä säilytettäisi suoraan tietokannassa, esimerkiksi `Posts`-taulukon rivissä `like_count` joka päivitetään SQL `TRIGGER`-komennon avulla. Kehittäjä katsoo kuitenkin, että tämänlainen muutos tässä vaiheessa ohjelman kehitystä on turhan suuri verrattuna muutoksen hyötyasteeseen.

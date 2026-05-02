@@ -126,4 +126,4 @@ def create_filters(user_id=None, tab="latest", q=None,
 
 joka ottaa kuusi (6) parametria. Jos metodi sisältää liian monta parametria, on helpompi tehdä virhe funktiokutsun yhteydessä, esimerkiksi listaamalla parametrit väärässä järjestyksessä.
 
-Parempi käytäntö olisi ehdottomasti faktoroida funktio useampaan pienempään apufunktioon. Kehittäjä kuitenkin katsoo, että koodin toimivuus ja muokattavuus on siitä huolimatta hyväksyttävällä tasolla.
+Parempi käytäntö olisi ehdottomasti faktoroida funktio useampaan pienempään apufunktioon. Kehittäjä kuitenkin katsoo, että koodin toimivuus ja muokattavuus on siitä huolimatta hyväksyttävällä tasolla. Metodit, jossa nämä ongelmat esiintyvät, käsittelevät suoraan SQL-komentoja ja niiden parametreja; tämä katsotaan luontevaksi tavaksi edetä.

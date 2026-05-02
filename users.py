@@ -141,8 +141,7 @@ def register(username, password):
     user_id = """SELECT id FROM Users WHERE username = ?"""
     return db.query(user_id, [username])[0]["id"]
 
-# TODO Rename & rework, e.g. get_password_hash()
-def login(username, password):
+def get_auth(username):
     """Retrieves the password hash for a user by username."""
     query = "SELECT id, password_hash FROM Users WHERE username = ?"
     sql = db.query(query, [username])

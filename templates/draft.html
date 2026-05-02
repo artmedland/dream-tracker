@@ -9,26 +9,26 @@
 
 <form action="/publish" method="post">
   <p>
-    Titel: <br />
+    <label for="title">Titel</label> <br />
     <input type="text" name="title" 
     maxlength="{{ title_max }}" required/>
   </p>
 
   <p>
-    Sov du gott? <br />
+    <label for="sleep_quality">Sov du gott</label>? <br />
 
     <input type="range" id="sleep_quality" name="sleep_quality"
     min="1" max="5" step="1" value="3">
   </p>
 
   <p>
-    Vad drömde du om? <br />
+    <label for="dream">Vad drömde du om?</label> <br />
     <textarea name="dream" rows="10" cols="64" 
     maxlength="{{ dream_max }}"></textarea>
   </p>
 
   <p>
-    Synlighet
+    <label for="visibility">Synlighet</label>
     <select name="visibility">
       <option value="public" selected>Offentlig</option>
       <option value="private">Privat</option>
@@ -38,7 +38,7 @@
 
   {% for category in categories %}
   <div class="categories">
-    {{ category }}:
+    <label for="categories">{{ category }}</label>
     <select name="categories">
       {% for option in categories[category] %}
         <option value="{{ category }}:{{ option }}">
@@ -50,7 +50,7 @@
   {% endfor %}
 
   <p>
-    Jag lade mig klockan
+    <label for="bedtime-h">Jag lade mig klockan</label>
 
     <select name="bedtime-h">
     {% for i in range(24) %}
@@ -66,7 +66,7 @@
   </p>
 
   <p>
-    Det tog mig
+    <label for="delay-h">Det tog mig</label>
     
     <select name="delay-h">
     {% for i in range(13) %}
@@ -79,11 +79,11 @@
       <option value="{{i}}">{{ "%02d" | format(i) }}</option>
       {% endfor %}
     </select> m
-    att få sömn.
+    <label for="delay-m">att få sömn.</label>
   </p>
 
   <p>
-    Nyckelord
+    <label for="tags">Nyckelord</label>
     <input type="text" name="tags">
   </p>
   <p>

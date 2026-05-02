@@ -11,13 +11,22 @@ Användare kan
 - skapa ett konto och logga in
 - skapa nya inlägg samt redigera och radera sina egna inlägg
 - se sina egna likväl andra användares inlägg
-- följa andra användare och få deras inlägg i sitt flöde
+- följa andra användare och få deras inlägg i en behändig plats på hemsidan
 - ange synlighetsvillkor för sina inlägg (ex. offentlig, enbart följare, privat...)
-- välja kategorier till sina egna inlägg,
-- söka efter inlägg enligt sökord, filterkategorier eller statistik,
-- se användares profilsidor, som visar deras inlägg samt aktuell statistik om dem,
-- svara på, gilla och reagera på inlägg,
-- lägga till inlägg i samlingslistor
+- välja lämpliga kategorier till sina egna inlägg
+- söka efter inlägg enligt sökord, filterkategorier och/eller statistik
+- se användares profilsidor, som visar deras inlägg samt aktuell statistik om dem
+- svara på samt gilla inlägg
+
+## Noteringar
+
+En del förbättringar är möjliga:
+- Egentligen bör CSRF bekräftas även vid registrering och inloggning. Tumregeln är att POST-metoder alltid bör bekräftas med en hemlig token.
+- Användbarheten kan förbättras marginellt genom att visa felmeddelanden på samma sida som de sker. Detta anses dock utgöra en låg prioritet.
+- Länkar kan visas på ett tydligare sätt, men utvecklaren anser att applikationens användbarhet är tillräckligt god och intuitiv med den stil som redan används.
+- Radbrytningar (och annan markdown-stils texthantering) behandlas enbart på sidorna som visar hela inlägg, men exempelvis inte på framsidan eller i kommentar. Detta beteendet är avsiktligt, eftersom enbart hela inlägg är avsedda för längre brödtext med styckeindelning.
+- Kommentar på inlägg som är privata eller avsedda enbart för vänner (användare som publiceraren följer) är offentliga för alla användare. Detta anses inte utgöra ett stort problem, eftersom enbart kommentar (och inte hela inlägg) syns.
+- För programmets prestanda är det möjligt att behandla likes på ett annat sätt, som presenteras i [seed-rapporten](/docs/seed_report.swe.md).
 
 # Installation
 
